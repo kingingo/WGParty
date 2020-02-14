@@ -1,14 +1,84 @@
-html,
-body {
+html,body {
   height: 100%;
+}
+
+h1,th,td,p,span{
+	color:white;
 }
 
 body {
   -ms-flex-align: center;
   align-items: center;
-  background-color: #f5f5f5;
+/*   background-color: #f5f5f5; */
+	background-color:#2b2929; /*#3d3a3a;*/
 }
 
-#game, #countdown{
-	position:absolute;
+#krone{
+	position:relative;
+	height:128px;
+	width: 128px;
+	top:-25%;
+	left:-25%;
+	transform: rotate(-35deg);
 }
+
+#loser{
+	position:relative;
+	height:256px;
+	width: 256px;
+	top:-25%;
+	left:-25%;
+	transform: rotate(-35deg);
+}
+
+.box{
+	border-color: red;
+    border-style: dashed;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+.center{
+	margin-left:auto;
+	margin-right:auto;
+}
+
+.load_center{
+  	margin-left: auto;
+  	margin-right: auto;
+  	
+  	display: -ms-flexbox;
+	display: block;
+	padding-top: 40px;
+	padding-bottom: 40px;
+}
+
+.load {
+	-webkit-animation: spin1 2s infinite linear;
+	-moz-animation: spin1 2s infinite linear;
+	-o-animation: spin1 2s infinite linear;
+	-ms-animation: spin1 2s infinite linear;
+	animation: spin1 2s infinite linear;
+}
+ 
+@-webkit-keyframes spin1 {
+0% { -webkit-transform: rotate(0deg);}
+100% { -webkit-transform: rotate(360deg);}
+}
+@-moz-keyframes spin1 {
+0% { -moz-transform: rotate(0deg);}
+100% { -moz-transform: rotate(360deg);}
+}
+@-o-keyframes spin1 {
+0% { -o-transform: rotate(0deg);}
+100% { -o-transform: rotate(360deg);}
+}
+@-ms-keyframes spin1 {
+0% { -ms-transform: rotate(0deg);}
+100% { -ms-transform: rotate(360deg);}
+}
+@-keyframes spin1 {
+0% { transform: rotate(0deg);}
+100% { transform: rotate(360deg);}
+} 

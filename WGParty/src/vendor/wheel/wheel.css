@@ -4,12 +4,6 @@ text {
 	pointer-events: none;
 }
 
-.center{
-  margin: auto;
-  width: 50%;
-  padding: 10px;
-}
-
 #chart {
 /* 	position: absolute; */
 /* 	width: 500px; */
@@ -20,10 +14,10 @@ text {
 
 #question {
 /* 	position: absolute; */
-	width: 400px;
-	height: 500px;
-	top: 0;
-	left: 520px;
+/* 	width: 400px; */
+/* 	height: 500px; */
+/* 	top: 0; */
+/* 	left: 520px; */
 }
 
 #question h1 {

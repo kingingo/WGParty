@@ -1,8 +1,9 @@
 #countdown{
 	text-align: center;
-    margin-top: 10%;
+	position:absolute;
 }
 
-#h1{
-    font-size: 6em;
+.countdown_min{
+	font-size: 1em;
+	color: white;
 }

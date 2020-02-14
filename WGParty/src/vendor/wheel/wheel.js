@@ -6,7 +6,7 @@ var init=false;
 	 			padding = {top:20, right:40, bottom:0, left:0},
 	            w = 500 - padding.left - padding.right,
 	            h = 500 - padding.top  - padding.bottom,
-	            r = Math.min(w, h)/2,
+	            radius = Math.min(w, h)/2,
 	            rotation = 0,
 	            oldrotation = 0,
 	            picked = 100000,
@@ -43,7 +43,7 @@ var init=false;
 	        pie = d3.layout.pie().sort(null).value(function(d){return 1;});
 
 	        // declare an arc generator function
-	        arc = d3.svg.arc().outerRadius(r);
+	        arc = d3.svg.arc().outerRadius(radius);
 
 	        // select paths, use arc generator to draw
 	        arcs = vis.selectAll("g.slice")
@@ -60,7 +60,7 @@ var init=false;
 	        // add the text
 	        arcs.append("text").attr("transform", function(d){
 	                d.innerRadius = 0;
-	                d.outerRadius = r;
+	                d.outerRadius = radius;
 	                d.angle = (d.startAngle + d.endAngle)/2;
 	                return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")translate(" + (d.outerRadius -10) +")";
 	            })
@@ -76,7 +76,7 @@ var init=false;
 	        svg.append("g")
 	            .attr("transform", "translate(" + (w + padding.left + padding.right) + "," + ((h/2)+padding.top) + ")")
 	            .append("path")
-	            .attr("d", "M-" + (r*.15) + ",0L0," + (r*.05) + "L0,-" + (r*.05) + "Z")
+	            .attr("d", "M-" + (radius*.15) + ",0L0," + (radius*.05) + "L0,-" + (radius*.05) + "Z")
 	            .style({"fill":"black"});
 
 	        // draw spin circle

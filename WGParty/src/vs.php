@@ -12,8 +12,8 @@
      	<script src = "vendor/wheel/wheel.js"></script>
 	</head>
 	
-	<body class="text-center">
-		<button onclick="toggle()" class="btn btn-warning">fertig</button>
+	<body>
+		<button onclick="toggle()" style="display:flex;float left;" class="btn btn-warning">fertig</button>
 		<script type="text/javascript">
 			var c = true;
 			startCountdown(60);
@@ -35,7 +35,7 @@
 			}
 		</script>
 		
-		<div class="center">
+		<div class="box">
     		<div id="countdown">
     			<h1>COUNTDOWN</h1>
     			<h1 id="h1"></h1>
@@ -45,11 +45,9 @@
     			<img alt="?" src="images/unknown.png">
     			<img alt="vs" style="height: 100px;width: auto;"src="images/vs.png">
     			<img alt="?" src="images/unknown.png">
-       	 		<div style="display:none" class="center" id="question">
-       	 			<img>
-       	 			<br>
-       	 			<strong></strong>
-       	 			<br>
+       	 		<div style="display:none" id="question">
+       	 			<img class="center">
+       	 			<strong class="center"></strong>
        	 		</div>
     			<div id="chart"></div>
     		</div>

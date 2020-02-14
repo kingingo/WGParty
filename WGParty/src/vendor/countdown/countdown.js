@@ -1,22 +1,48 @@
 var time_limit,target_date,id, days, hours, minutes, seconds; // variables for time units
 var countdown = document.getElementById("countdown"); // get tag element
+setCountdownSize('6em');
 
 function stopCountdown(){
+	if(typeof id !== 'undefined')return;
 	clearInterval(id);
+	id = undefined;
 }
 
-function startCountdown(minutes){
-	target_date = new Date().getTime() + ((minutes * 60 ) * 1000); // set the countdown date
-	time_limit = ((minutes * 60 ) * 1000);
+function startCountdown(target_time){
+	stopCountdown();
+	target_date = target_time; // set the countdown date
+	time_limit = (target_time - getCurrentTime())/1000;
 	getCountdown();
 
 	id=setInterval(function () { getCountdown(); }, 1000);
 }
 
+function setCountdownSize(size){
+	countdown.style.fontSize = size;
+}
+
+function addCountdownTitleClass(clazz){
+	var el = document.getElementById('countdown_title');
+	el.classList.add(clazz);
+}
+
+function setCountdownPos(pos){
+	countdown.style.position=pos;
+}
+
+function setCountdownTitle(title){
+	var el = document.getElementById('countdown_title');
+	el.innerHTML=title;
+}
+
+function getCurrentTime(){
+	return new Date().getTime();
+}
+
 function getCountdown(){
 
 	// find the amount of "seconds" between now and target
-	var current_date = new Date().getTime();
+	var current_date = getCurrentTime();
 	var seconds_left = (target_date - current_date) / 1000;
   
 	if ( seconds_left >= 0 ) {
@@ -39,7 +65,7 @@ function getCountdown(){
 		minutes = pad( parseInt(seconds_left / 60) );
 		seconds = pad( parseInt( seconds_left % 60 ) );
 		// format countdown string + set tag value
-		$('#h1').text(hours + ":" + minutes + ":" + seconds);
+		$('#countdown_h1').text(hours + ":" + minutes + ":" + seconds);
 	}
 }
 

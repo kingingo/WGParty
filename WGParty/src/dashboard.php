@@ -1,39 +1,108 @@
 <html>
-	<head>
-		<title>WG PARTY - DASHBOARD</title>
+<head>
+<title>WG PARTY - DASHBOARD</title>
+<link href="vendor/css/dashboard.css" rel="stylesheet">
+<script src="vendor/explosion/explosion.js" type="text/javascript"></script>
+		<?php
+include_once 'vendor/utils.php';
+includeAll();
+includeTable();
+includeWheel();
+includeProfile();
+?>
 	</head>
-	<body class="text-center">
-		
-		<table class="table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">First</th>
-              <th scope="col">Last</th>
-              <th scope="col">Handle</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">1</th>
-              <td>Mark</td>
-              <td>Otto</td>
-              <td>@mdo</td>
-            </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>Jacob</td>
-              <td>Thornton</td>
-              <td>@fat</td>
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>Larry</td>
-              <td>the Bird</td>
-              <td>@twitter</td>
-            </tr>
-          </tbody>
-        </table>
+<body class="text-center">
+	<div id="content" style="display: none;">
+		<h1>Dashboard</h1>
+		<?php include 'vendor/countdown/countdown.html'; ?>
+		<hr>
+		<table class="center" id="table" hidden>
+			<tr>
+				<th>Player</th>
+				<th onclick="sortTable(1)" style="cursor:pointer;">Wins</th>
+				<th onclick="sortTable(2)" style="cursor:pointer;">Loses / Drinks</th>
+			</tr>
+		</table>
 	
-	</body>
+		<div id="stage">
+			<?php setMatch(); ?>
+			<?php include 'vendor/wheel/wheel.html';?>
+		</div>
+	</div>
+		
+	
+		<?php include 'loading.php';?>
+		<?php includeCounter(); ?>
+		<script type="text/javascript">
+			function toggle(){
+				if(!$('#table').is(":hidden")){
+					$('#table').hide();
+					$('#stage').show();
+				}else{
+					$('#stage').hide();
+					$('#table').show();
+				}
+			}
+			
+			initWheel();
+			$(document).ready(function(){
+				
+				addCountdownTitleClass('countdown_min');
+				setCountdownSize('1em');
+				setCountdownPos('static');
+				setCountdownTitle('next game in');
+				
+				connect(cookieCheck,function(packetId, buffer){
+					switch(packetId){
+					case COUNTERACK:
+						var packet = new CounterAckPacket();
+						packet.parseFromInput(buffer);
+						startCountdown(packet.time);
+						break;
+					case HANDSHAKEACK:
+						var packet = new HandshakeAckPacket(); 
+						packet.parseFromInput(buffer);
+					    debug("Received HandshakeAckPacket -> "+packet.toString());
+
+						if(packet.accepted){
+							setLoading(false);
+							
+							var packet = new StatsPacket(true);
+							write(packet);
+							packet = new CounterPacket(getCurrentTime());
+							write(packet);
+						}else{
+							debug("Not Accepted...");
+							window.location = "http://localhost";
+						}
+						break;
+					case STATSACK:
+						var packet = new StatsAckPacket();
+						packet.parseFromInput(buffer);
+						var list = packet.list;
+						var table = document.getElementById('table');
+						
+						for(var i = 0; i < list.length; i++){
+							var stats = list[i];
+							var el = document.getElementById(stats.uuid);
+
+							if(el==null){
+								table.appendChild(createRow(stats));
+							}else{
+								console.log("update "+stats.name+" to wins:"+stats.wins+" loses:"+stats.loses);
+								updateRow(stats,el);
+							}
+							sortTable();
+						}
+						break;
+					default:
+						console.log("Packet "+packetId+" not found!");
+						break;
+					}
+				});
+			});
+
+			
+		</script>
+</body>
 </html>
