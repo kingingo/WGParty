@@ -13,13 +13,15 @@ function setMatch(){
     echo '
     <div class="profileContainer">
     <div class="profile" id="p1">
-		<img hidden alt="loser" id="p1_loser" class="loser" src="images/loser.png">
+		<img alt="loser" id="p1_loser" class="loser" src="images/loser.png">
     	<img alt="krone" id="p1_krone" class="krone" src="images/knossiKrone.png">
+        <p id="p1_name"></p>
 	</div>
     <img alt="vs" class="vs" src="images/vs.png">
     <div class="profile" id="p2">
 		<img alt="loser" id="p2_loser" class="loser" src="images/loser.png">
-    	<img hidden alt="krone" id="p2_krone" class="krone" src="images/knossiKrone.png">
+    	<img alt="krone" id="p2_krone" class="krone" src="images/knossiKrone.png">
+        <p id="p2_name"></p>
 	</div>
     </div>';
 }
@@ -68,6 +70,10 @@ function includePath($path){
 ?>
 
 <script>
+function getUUID(){
+	return getCookie("SID");
+}
+
 var cookieCheck=function(){
 	if(checkCookie("SID")){
 		var uuid = getCookie("SID");

@@ -59,6 +59,7 @@
 			  }else{
 				  debug("Not Accepted...");
 				  setLoading(false);
+				  removeCookie();
 			  }
 			  break;
 		  default:

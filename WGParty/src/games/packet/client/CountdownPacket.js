@@ -8,7 +8,7 @@ class CountdownPacket{
 	
 	parseToOutput(){
 		this.buffer = new dcodeIO.ByteBuffer(8,false,false);
-		this.buffer.writeFloat64(this.time);
+		this.buffer.writeDouble(this.time);
 		return this.buffer;
 	}
 	

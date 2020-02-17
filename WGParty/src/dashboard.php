@@ -34,9 +34,14 @@ includeProfile();
 		<?php include 'loading.php';?>
 		<?php includeCounter(); ?>
 		<script type="text/javascript">
-			$('#table').hide();
-			function toggle(){
-				if(!$('#table').is(":hidden")){
+			$('#stage').hide();
+// 			$('#p1_krone').hide();
+			$('#p1_loser').hide();
+			$('#p2_krone').hide();
+// 			$('#p2_loser').hide();
+			
+			function toggle(table){
+				if(!table){
 					$('#table').hide();
 					$('#stage').show();
 				}else{
@@ -44,10 +49,24 @@ includeProfile();
 					$('#table').show();
 				}
 			}
-			
-			initWheel();
-			$(document).ready(function(){
+
+			function reset(){
+				let p1 = document.getElementById('p1');
+				p1.style.backgroundImage = "";
+				let p1_name = document.getElementById('p1_name');
+				p1_name.innerHTML = "";
+// 				$('#p1_krone').hide();
+// 				$('#p1_loser').hide();
 				
+				let p2 = document.getElementById('p2');
+				p2.style.backgroundImage = "";
+				let p2_name = document.getElementById('p2_name');
+				p2_name.innerHTML = "";
+// 				$('#p2_krone').hide();
+// 				$('#p2_loser').hide();
+			}
+			
+			$(document).ready(function(){
 				addCountdownTitleClass('countdown_min');
 				setCountdownSize('1em');
 				setCountdownPos('static');
@@ -55,14 +74,35 @@ includeProfile();
 				
 				connect(cookieCheck,function(packetId, buffer){
 					switch(packetId){
+					case WHEELSPIN:
+						var packet = new WheelSpinPacket();
+						packet.parseFromInput(buffer);
+						debug("Received WheelSpinPacket "+packet.toString())
+						spin(packet.rand);
+						break;
 					case MATCH:
 						var packet = new MatchPacket();
 						packet.parseFromInput(buffer);
 						console.log("Winner:"+packet.winner+" Loser:"+packet.loser);
 						var p1 = document.getElementById('p1');
 						p1.style.backgroundImage = "url(images/profiles/"+packet.winner_uuid+".png)";
+						p1 = document.getElementById('p1_name');
+						p1.innerHTML = packet.winner;
+						
 						var p2 = document.getElementById('p2');
 						p2.style.backgroundImage = "url(images/profiles/"+packet.loser_uuid+".png)";
+						p2 = document.getElementById('p2_name');
+						p2.innerHTML = packet.loser;
+
+						initWheel(packet.alk);
+						if(packet.loser_uuid === getUUID()){
+							setTimeout(() => {
+								activateWheel();
+								console.log("Wheel is start klar!");
+							},100);
+						}
+
+						toggle(false);
 						break;
 					case COUNTDOWNACK:
 						var packet = new CountdownAckPacket();
@@ -75,6 +115,8 @@ includeProfile();
 					    debug("Received HandshakeAckPacket -> "+packet.toString());
 
 						if(packet.accepted){
+							reset();
+							toggle(true);
 							setLoading(false);
 							
 							var packet = new StatsPacket(true);

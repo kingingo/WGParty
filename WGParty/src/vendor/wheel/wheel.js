@@ -1,7 +1,7 @@
 var padding, data, svg, container, vis, pie, arc, arcs;
 var init=false;
 
-	function initWheel(){
+	function initWheel(newData){
 	 		if(!init){
 	 			padding = {top:20, right:40, bottom:0, left:0},
 	            w = 500 - padding.left - padding.right,
@@ -13,18 +13,19 @@ var init=false;
 	            oldpick = [],
 	            color = d3.scale.category20();
 	       
-	        data = [
-	                    {"label":"Vodka",  "value":1,  pic:"vodka.png"}, 
-	                    {"label":"Jägermeister",  "value":1,  pic:"jaegermeister.png"},
-	                    {"label":"Teqila",  "value":1,  pic:"tequila.png"},
-	                    {"label":"Whiskey",  "value":1,  pic:"whiskey.png"}, 
-	                    {"label":"Berliner Luft",  "value":1,  pic:"berliner_luft.png"}, 
-	                    {"label":"Bergman Bier",  "value":1,  pic:"bergmann.png"},
-	                    {"label":"Astra Rakete",  "value":1,  pic:"astra.png"}, 
-	                    {"label":"Gin",  "value":1,  pic:"gin.png"}, 
-	                    {"label":"Rum",  "value":1,  pic:"rum.png"},
-	                    {"label":"Glühwein", "value":1, pic:"gluehwein.png"},
-	        ];
+	 		data=newData;
+//	        data = [
+//	                    {"label":"Vodka",  "value":1,  pic:"vodka.png"}, 
+//	                    {"label":"Jägermeister",  "value":1,  pic:"jaegermeister.png"},
+//	                    {"label":"Teqila",  "value":1,  pic:"tequila.png"},
+//	                    {"label":"Whiskey",  "value":1,  pic:"whiskey.png"}, 
+//	                    {"label":"Berliner Luft",  "value":1,  pic:"berliner_luft.png"}, 
+//	                    {"label":"Bergman Bier",  "value":1,  pic:"bergmann.png"},
+//	                    {"label":"Astra Rakete",  "value":1,  pic:"astra.png"}, 
+//	                    {"label":"Gin",  "value":1,  pic:"gin.png"}, 
+//	                    {"label":"Rum",  "value":1,  pic:"rum.png"},
+//	                    {"label":"Glühwein", "value":1, pic:"gluehwein.png"},
+//	        ];
 
 
 	        svg = d3.select('#chart')
@@ -98,10 +99,10 @@ var init=false;
 		}
 
 		function activateWheel(){
-	        container.on("click", spin);
+	        container.on("click", spin.bind(null,undefined));
 		}
 
-        function spin(d){
+        function spin(rand){
             
             container.on("click", null);
 
@@ -112,10 +113,18 @@ var init=false;
                 container.on("click", null);
                 return;
             }
-
+            
+            console.log("TYPE:"+(typeof rand)+" = "+rand);
+            if(typeof rand === "undefined"){
+            	rand = Math.random();
+            	
+            	var packet = new WheelSpinPacket(rand);
+            	write(packet);
+            	debug("Send WheelSpinPacket "+packet.toString());
+            }
             var  ps       = 360/data.length,
-                 pieslice = Math.round(1440/data.length),
-                 rng      = Math.floor((Math.random() * 1440) + 360);
+//                 pieslice = Math.round(1440/data.length),
+                 rng      = Math.floor((rand * 1440) + 360);
                 
             rotation = (Math.round(rng / ps) * ps);
             

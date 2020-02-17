@@ -20,7 +20,7 @@ function write(packet){
 }
 
 function connect(onopen, onmessage){
-	  socket = new WebSocket("ws://localhost:8887");
+	  socket = new WebSocket("ws://192.168.178.21:8887");
 	  socket.binaryType="arraybuffer";
 	  // callback-Funktion wird gerufen, wenn die Verbindung erfolgreich
 	  // aufgebaut werden konnte
