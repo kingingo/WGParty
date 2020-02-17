@@ -156,7 +156,6 @@ var init=false;
                     d3.select("#question strong").text(data[picked].label);
                     oldrotation = rotation;
                 
-                    container.on("click", spin);
                     d3.select("#chart").attr("style","display:none");
                     d3.select("#chart").html("");
                     init=false;
