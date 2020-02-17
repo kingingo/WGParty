@@ -1,9 +1,9 @@
-var COUNTER = 0;
-class CounterPacket{
+var COUNTDOWN = 0;
+class CountdownPacket{
 	
 	constructor(time){
 		this.time=time;
-		this.id=COUNTER;
+		this.id=COUNTDOWN;
 	}
 	
 	parseToOutput(){

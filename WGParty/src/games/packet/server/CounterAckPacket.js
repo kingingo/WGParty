@@ -1,6 +1,6 @@
-var COUNTERACK=0;
+var COUNTDOWNACK=0;
 
-class CounterAckPacket {
+class CountdownAckPacket {
 	
 	parseFromInput(buffer){
 		this.time = buffer.readFloat64();
