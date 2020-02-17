@@ -16,7 +16,7 @@ includeProfile();
 		<h1>Dashboard</h1>
 		<?php include 'vendor/countdown/countdown.html'; ?>
 		<hr>
-		<table class="center" id="table" hidden>
+		<table class="center" id="table">
 			<tr>
 				<th>Player</th>
 				<th onclick="sortTable(1)" style="cursor:pointer;">Wins</th>
@@ -34,6 +34,7 @@ includeProfile();
 		<?php include 'loading.php';?>
 		<?php includeCounter(); ?>
 		<script type="text/javascript">
+			$('#table').hide();
 			function toggle(){
 				if(!$('#table').is(":hidden")){
 					$('#table').hide();
@@ -54,8 +55,8 @@ includeProfile();
 				
 				connect(cookieCheck,function(packetId, buffer){
 					switch(packetId){
-					case COUNTERACK:
-						var packet = new CounterAckPacket();
+					case COUNTDOWNACK:
+						var packet = new CountdownAckPacket();
 						packet.parseFromInput(buffer);
 						startCountdown(packet.time);
 						break;
@@ -69,7 +70,7 @@ includeProfile();
 							
 							var packet = new StatsPacket(true);
 							write(packet);
-							packet = new CounterPacket(getCurrentTime());
+							packet = new CountdownPacket(getCurrentTime());
 							write(packet);
 						}else{
 							debug("Not Accepted...");
@@ -89,10 +90,10 @@ includeProfile();
 							if(el==null){
 								table.appendChild(createRow(stats));
 							}else{
-								console.log("update "+stats.name+" to wins:"+stats.wins+" loses:"+stats.loses);
+// 								console.log("update "+stats.name+" to wins:"+stats.wins+" loses:"+stats.loses);
 								updateRow(stats,el);
 							}
-							sortTable();
+							sortTable(undefined,false);
 						}
 						break;
 					default:

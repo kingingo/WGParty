@@ -1,7 +1,12 @@
-var sort = 1;
-			function sortTable(n) {
+			var sort = 1;
+			function sortTable(n, s) {
 				  var rel = typeof n === 'undefined';
+				  var rel1 = typeof s === 'undefined';
 
+				  if(rel1){
+					s = true;
+				  }
+				  
 				  if(rel){
 					n = sort;
 				  }
@@ -29,13 +34,13 @@ var sort = 1;
 				      /* Check if the two rows should switch place,
 				      based on the direction, asc or desc: */
 				      if (dir == "asc") {
-				        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+				        if (parseInt(x.innerHTML.toLowerCase()) > parseInt(y.innerHTML.toLowerCase())) {
 				          // If so, mark as a switch and break the loop:
 				          shouldSwitch = true;
 				          break;
 				        }
 				      } else if (dir == "desc") {
-				        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+				        if (parseInt(x.innerHTML.toLowerCase()) < parseInt(y.innerHTML.toLowerCase())) {
 				          // If so, mark as a switch and break the loop:
 				          shouldSwitch = true;
 				          break;
@@ -48,15 +53,15 @@ var sort = 1;
 				      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
 				      switching = true;
 				      // Each time a switch is done, increase this count by 1:
-				      switchcount ++;
+				      switchcount++;
 				    } else {
-				      /* If no switching has been done AND the direction is "asc",
-				      set the direction to "desc" and run the while loop again. */
-				      if (switchcount == 0 && dir == "desc") {
-				        dir = "asc";
-				        switching = true;
-				      }
-				    }
+					      /* If no switching has been done AND the direction is "asc",
+					      set the direction to "desc" and run the while loop again. */
+					      if (s && switchcount == 0 && dir == "desc") {
+					        dir = "asc";
+					        switching = true;
+					      }
+					    }
 				  }
 				}
 			
