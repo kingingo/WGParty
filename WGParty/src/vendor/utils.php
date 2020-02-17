@@ -75,7 +75,7 @@ var cookieCheck=function(){
 
 // 		setTimeout(() => {
 			debug("send HandshakePacket("+uuid+")");
-			write(new HandshakePacket(uuid));
+			write(new HandshakePacket(uuid,3));
 // 		}, 1000*5);
 	}else{
 		window.location = "http://localhost/";

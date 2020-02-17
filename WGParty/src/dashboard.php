@@ -59,7 +59,11 @@ includeProfile();
 						var packet = new MatchPacket();
 						packet.parseFromInput(buffer);
 						console.log("Winner:"+packet.winner+" Loser:"+packet.loser);
-
+						var p1 = document.getElementById('p1');
+						p1.style.backgroundImage = "url(images/profiles/"+packet.winner_uuid+".png)";
+						var p2 = document.getElementById('p2');
+						p2.style.backgroundImage = "url(images/profiles/"+packet.loser_uuid+".png)";
+						break;
 					case COUNTDOWNACK:
 						var packet = new CountdownAckPacket();
 						packet.parseFromInput(buffer);

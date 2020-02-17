@@ -33,7 +33,7 @@
 
         		setTimeout(() => {
         			debug("send HandshakePacket("+uuid+")");
-        			write(new HandshakePacket(uuid));
+        			write(new HandshakePacket(uuid,2));
         		}, 1000*3);
         	}else{
         		debug("Enable Register Form");
