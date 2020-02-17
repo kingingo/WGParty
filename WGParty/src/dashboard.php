@@ -54,6 +54,14 @@ includeProfile();
 				
 				connect(cookieCheck,function(packetId, buffer){
 					switch(packetId){
+					case MATCH:
+						var packet = new MatchPacket();
+						packet.parseFromInput(buffer);
+						console.log("Winner:"+packet.winner+" Loser:"+packet.loser);
+
+						
+						
+						break;
 					case COUNTERACK:
 						var packet = new CounterAckPacket();
 						packet.parseFromInput(buffer);
