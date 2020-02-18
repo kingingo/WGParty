@@ -125,7 +125,7 @@ includeProfile();
 							write(packet);
 						}else{
 							debug("Not Accepted...");
-							window.location = "http://localhost";
+							window.location = "http://"+url;
 						}
 						break;
 					case STATSACK:

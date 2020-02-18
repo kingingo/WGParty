@@ -1,4 +1,5 @@
 var socket;
+var url = "10.0.1.5";
 
 function write(packet){
 	var b = packet.parseToOutput();
@@ -20,7 +21,7 @@ function write(packet){
 }
 
 function connect(onopen, onmessage){
-	  socket = new WebSocket("ws://192.168.178.21:8887");
+	  socket = new WebSocket("ws://"+url+":8887");
 	  socket.binaryType="arraybuffer";
 	  // callback-Funktion wird gerufen, wenn die Verbindung erfolgreich
 	  // aufgebaut werden konnte

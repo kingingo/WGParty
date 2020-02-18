@@ -17,7 +17,7 @@
 		<label for="inputEmail" class="sr-only">Name</label>
 		<input type="text" id="name" class="form-control" placeholder="Name"> 
 		<label for="picture" class="col-form-label">Profilbild</label>
-		<input name="picture" id="pic" class="form-control" type="file" size="50" accept="image/*">
+		<input name="picture" id="pic" class="form-control" type="file" size="50" accept="image/jpeg, image/png">
 		<button class="btn btn-lg btn-primary btn-block" id="submit_button" type="submit">Anmelden</button>
 		<p class="mt-5 mb-3 text-muted">Powered by FELIX</p>
 	</form>
@@ -77,9 +77,9 @@
               	array = new Uint8Array(arrayBuffer);
               	
               	var name = $("#name").val();
-                var packet = new RegisterPacket(name,array);
+                var packet = new RegisterPacket(name,array,img.files[0].split(.)[1]);
                 localStorage.setItem('name',name);
-                localStorage.setItem('img',array);
+//                 localStorage.setItem('img',array);
 
     			debug("send RegisterPacket(name:"+name+")");
                 write(packet);

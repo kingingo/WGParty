@@ -84,7 +84,7 @@ var cookieCheck=function(){
 			write(new HandshakePacket(uuid,3));
 // 		}, 1000*5);
 	}else{
-		window.location = "http://localhost/";
+		window.location = "http://"+url+"/";
 	}
 }
 </script>
