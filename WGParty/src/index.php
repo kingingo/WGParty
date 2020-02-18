@@ -77,13 +77,13 @@
               	array = new Uint8Array(arrayBuffer);
               	
               	var name = $("#name").val();
-                var packet = new RegisterPacket(name,array,img.files[0].split(.)[1]);
+                var packet = new RegisterPacket(name,array,img.files[0].name.split(".")[1]);
                 localStorage.setItem('name',name);
 //                 localStorage.setItem('img',array);
 
     			debug("send RegisterPacket(name:"+name+")");
                 write(packet);
-            }
+            };
             reader.readAsArrayBuffer(img.files[0]);
         });
 	});
