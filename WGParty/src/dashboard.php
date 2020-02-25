@@ -24,26 +24,38 @@ includeProfile();
 			</tr>
 		</table>
 	
-		<div id="stage">
+		<div id="stage1">
 			<?php setMatch(); ?>
 			<?php include 'vendor/wheel/wheel.html';?>
+		</div>
+		<div id="stage2">
+		
 		</div>
 	</div>
 	
 		<?php include 'loading.php';?>
 		<?php includeCounter(); ?>
 		<script type="text/javascript">
-			$('#stage').hide();
-			
-			function toggle(table){
-				if(!table){
-					$('#table').hide();
-					$('#stage').show();
-				}else{
-					$('#stage').hide();
+			function toggle(v){
+				switch(v){
+				case 'table':
 					$('#table').show();
+					$('#stage1').hide();
+					$('#stage2').hide();
+					break;
+				case 'stage1':
+					$('#table').hide();
+					$('#stage1').show();
+					$('#stage2').hide();
+					break;
+				case 'stage2':
+					$('#table').hide();
+					$('#stage1').hide();
+					$('#stage2').show();
+					break;
 				}
 			}
+			toggle('table');
 			
 			$(document).ready(function(){
 				addCountdownTitleClass('countdown_min');
@@ -119,7 +131,7 @@ includeProfile();
 						$('#p1').hide();
 						$('#p2').hide();
 
-						toggle(false);
+						toggle('stage1');
 
 						setTimeout(function(){
 							p1_r.roulette('start');
@@ -155,7 +167,7 @@ includeProfile();
 							},100);
 						}
 
-						toggle(false);
+						toggle("stage1");
 						break;
 					case COUNTDOWNACK:
 						var packet = new CountdownAckPacket();
@@ -168,7 +180,7 @@ includeProfile();
 					    debug("Received HandshakeAckPacket -> "+packet.toString());
 
 						if(packet.accepted){
-							toggle(true);
+							toggle("table");
 							setLoading(false);
 							
 							var packet = new StatsPacket(true);
