@@ -1,0 +1,49 @@
+.profile {
+	background-image: url(../../images/unknown.png);
+	background-size: 256px 256px;
+	height: 256px;
+	width: 256px;
+	border: 1px solid;
+	float: left;
+	text-align: left;
+}
+
+.profileContainer {
+	display: inline-block;
+}
+
+#p1_name {
+	position: relative;
+	float: right;
+	top: 50%;
+}
+
+#p2_name {
+	position: relative;
+	top: 50%;
+	float: left;
+}
+
+.krone {
+	position: relative;
+	height: 128px;
+	width: 128px;
+	top: -25%;
+	left: -25%;
+	transform: rotate(-35deg);
+}
+
+.vs {
+	position: relative;
+	float: left;
+	height: 100px;
+	width: auto;
+}
+
+.loser {
+	position: absolute;
+	height: 256px;
+	width: 256px;
+	opacity: 0.6;
+	transform: rotate(-35deg);
+}

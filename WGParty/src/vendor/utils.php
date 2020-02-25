@@ -2,28 +2,32 @@
 function includeWheel(){
     echo '<link href="vendor/wheel/wheel.css" rel="stylesheet">
 		<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-		<script src="vendor/wheel/wheel.js"></script>';
+		<script src="vendor/wheel/wheel.js"></script>
+        <script src="vendor/roulette/roulette.js"></script>';
 }
 
 function includeProfile(){
-    echo '<link href="vendor/css/profile.css" rel="stylesheet">';
+    echo '<link href="vendor/profile/profile.css" rel="stylesheet">';
+    echo '<script src="vendor/profile/profile.js"></script>';
 }
 
 function setMatch(){
     echo '
     <div class="profileContainer">
-    <div class="profile" id="p1">
-		<img alt="loser" id="p1_loser" class="loser" src="images/loser.png">
-    	<img alt="krone" id="p1_krone" class="krone" src="images/knossiKrone.png">
-        <p id="p1_name"></p>
-	</div>
-    <img alt="vs" class="vs" src="images/vs.png">
-    <div class="profile" id="p2">
-		<img alt="loser" id="p2_loser" class="loser" src="images/loser.png">
-    	<img alt="krone" id="p2_krone" class="krone" src="images/knossiKrone.png">
-        <p id="p2_name"></p>
-	</div>
-    </div>';
+		<div class="profile" id="p1">
+			<img alt="loser" id="p1_loser" class="loser" src="images/loser.png">
+    		<img alt="krone" id="p1_krone" class="krone" src="images/knossiKrone.png">
+        	<p id="p1_name"></p>
+		</div>
+		<div id="p1_roulette" class="profile"></div>
+		<img alt="vs" class="vs" src="images/vs.png">
+		<div class="profile" id="p2">
+			<img alt="loser" id="p2_loser" class="loser" src="images/loser.png">
+    		<img alt="krone" id="p2_krone" class="krone" src="images/knossiKrone.png">
+        	<p id="p2_name"></p>
+		</div>
+		<div id="p2_roulette" class="profile"></div>
+	</div>';
 }
 
 function includeCounter(){
@@ -70,6 +74,10 @@ function includePath($path){
 ?>
 
 <script>
+function rand(min,max){
+	return Math.floor((Math.random() * max) + min);
+}
+
 function getUUID(){
 	return getCookie("SID");
 }

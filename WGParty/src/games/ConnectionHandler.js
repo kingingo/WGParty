@@ -1,5 +1,5 @@
 var socket;
-var url = "10.0.1.5";
+var url = "localhost";//"192.168.178.21";
 
 function write(packet){
 	var b = packet.parseToOutput();

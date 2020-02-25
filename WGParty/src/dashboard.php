@@ -29,16 +29,11 @@ includeProfile();
 			<?php include 'vendor/wheel/wheel.html';?>
 		</div>
 	</div>
-		
 	
 		<?php include 'loading.php';?>
 		<?php includeCounter(); ?>
 		<script type="text/javascript">
 			$('#stage').hide();
-// 			$('#p1_krone').hide();
-			$('#p1_loser').hide();
-			$('#p2_krone').hide();
-// 			$('#p2_loser').hide();
 			
 			function toggle(table){
 				if(!table){
@@ -49,22 +44,6 @@ includeProfile();
 					$('#table').show();
 				}
 			}
-
-			function reset(){
-				let p1 = document.getElementById('p1');
-				p1.style.backgroundImage = "";
-				let p1_name = document.getElementById('p1_name');
-				p1_name.innerHTML = "";
-// 				$('#p1_krone').hide();
-// 				$('#p1_loser').hide();
-				
-				let p2 = document.getElementById('p2');
-				p2.style.backgroundImage = "";
-				let p2_name = document.getElementById('p2_name');
-				p2_name.innerHTML = "";
-// 				$('#p2_krone').hide();
-// 				$('#p2_loser').hide();
-			}
 			
 			$(document).ready(function(){
 				addCountdownTitleClass('countdown_min');
@@ -74,6 +53,81 @@ includeProfile();
 				
 				connect(cookieCheck,function(packetId, buffer){
 					switch(packetId){
+					case STARTMATCH:
+						var packet = new StartMatchPacket();
+						packet.parseFromInput(buffer);
+
+
+						localStorage.setItem('p1_uuid',packet.u1_uuid);
+						localStorage.setItem('p1_name',packet.u1_name);
+						
+						localStorage.setItem('p2_uuid',packet.u2_uuid);
+						localStorage.setItem('p2_name',packet.u2_name);
+						
+						var p1_r = $('#p1_roulette');
+						p1_r.empty();
+						for(var i = 0; i < packet.loaded.length; i++)
+							p1_r.append(packet.loaded[i]);
+						
+						p1_r.roulette({
+							id: "p1",
+							speed : 10,
+							duration : rand(3,5),
+							stopImageNumber : packet.u1_index,
+							startCallback : function(options) {
+								startCallbackProfile(options.id);
+								console.log('start');
+							},
+							slowDownCallback : function() {
+								console.log('slowDown');
+							},
+							stopCallback : function($stopElm,options) {
+								console.log('stop '+$stopElm.attr('src'));
+								stopCallbackProfile($stopElm.attr('src'),options.id, true);
+								$('#'+options.id+'_roulette').roulette('remove');
+							}
+						});
+						
+						var p2_r = $('#p2_roulette');
+						p2_r.empty();
+						let img;
+						for(var i = 0; i < packet.loaded.length; i++){
+							img = new Image();
+							img.src = packet.loaded[i].src;
+							p2_r.append(img);
+						}
+						
+						p2_r.roulette({
+							id: "p2",
+							speed : 10,
+							duration : rand(3,5),
+							stopImageNumber : packet.u2_index,
+							startCallback : function(options) {
+								startCallbackProfile(options.id);
+								console.log('start');
+							},
+							slowDownCallback : function() {
+								console.log('slowDown');
+							},
+							stopCallback : function($stopElm,options) {
+								console.log('stop '+$stopElm.attr('src'));
+								stopCallbackProfile($stopElm.attr('src'),options.id, true);
+								$('#'+options.id+'_roulette').roulette('remove');
+							}
+						});
+
+						$('#p1').hide();
+						$('#p2').hide();
+
+						toggle(false);
+
+						setTimeout(function(){
+							p1_r.roulette('start');
+						},3000);
+						setTimeout(function(){
+							p2_r.roulette('start');
+						},1500);
+						break;
 					case WHEELSPIN:
 						var packet = new WheelSpinPacket();
 						packet.parseFromInput(buffer);
@@ -84,15 +138,14 @@ includeProfile();
 						var packet = new MatchPacket();
 						packet.parseFromInput(buffer);
 						console.log("Winner:"+packet.winner+" Loser:"+packet.loser);
-						var p1 = document.getElementById('p1');
-						p1.style.backgroundImage = "url(images/profiles/"+packet.winner_uuid+".png)";
-						p1 = document.getElementById('p1_name');
-						p1.innerHTML = packet.winner;
-						
-						var p2 = document.getElementById('p2');
-						p2.style.backgroundImage = "url(images/profiles/"+packet.loser_uuid+".png)";
-						p2 = document.getElementById('p2_name');
-						p2.innerHTML = packet.loser;
+
+						if(packet.winner.toUpperCase() == localStorage.getItem('p1_name')){
+							setStatus('p1',true);
+							setStatus('p2',false);
+						}else{
+							setStatus('p2',true);
+							setStatus('p1',false);
+						}
 
 						initWheel(packet.alk);
 						if(packet.loser_uuid === getUUID()){
@@ -115,7 +168,6 @@ includeProfile();
 					    debug("Received HandshakeAckPacket -> "+packet.toString());
 
 						if(packet.accepted){
-							reset();
 							toggle(true);
 							setLoading(false);
 							
