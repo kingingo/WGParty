@@ -1,4 +1,10 @@
 <?php
+function includeFavicon(){
+    echo '<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+<link rel="icon" href="favicon.ico" type="image/x-icon">';
+}
+
+
 function includeWheel(){
     echo '<link href="vendor/wheel/wheel.css" rel="stylesheet">
 		<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
@@ -36,6 +42,10 @@ function includeCounter(){
 		<script src="vendor/countdown/countdown.js"></script>';
 }
 
+function includeWord(){
+    echo '<link href="vendor/word/word.css" rel="stylesheet"><script src="vendor/word/word.js"></script>';
+}
+
 function includeTable(){
     echo '<script src="vendor/table/table.js"></script>';
 }
@@ -47,6 +57,7 @@ function includeBootstrap(){
 }
 
 function includeAll(){
+    includeFavicon();
     includeBootstrap();
     echo '<link href="vendor/css/style.css" rel="stylesheet">';
     echo '<script src="vendor/buffer/bytebuffer.js"></script>';

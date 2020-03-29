@@ -3,7 +3,8 @@ var countdown = document.getElementById("countdown"); // get tag element
 setCountdownSize('6em');
 
 function stopCountdown(){
-	if(typeof id !== 'undefined')return;
+	if(typeof id == 'undefined')return;
+	$('#countdown_h1').text("00:00:00");
 	clearInterval(id);
 	id = undefined;
 }
@@ -40,17 +41,15 @@ function getCurrentTime(){
 }
 
 function getCountdown(){
-
 	// find the amount of "seconds" between now and target
 	var current_date = getCurrentTime();
 	var seconds_left = (target_date - current_date) / 1000;
-  
+	
 	if ( seconds_left >= 0 ) {
 	   if ( (seconds_left * 1000 ) < ( time_limit / 2 ) )  {
-	     $( '#tiles' ).removeClass('color-full');
-	     $( '#tiles' ).addClass('color-half');
-	
-			} 
+		     $( '#tiles' ).removeClass('color-full');
+		     $( '#tiles' ).addClass('color-half');
+	   	} 
 	    if ( (seconds_left * 1000 ) < ( time_limit / 4 ) )  {
 	    	$( '#tiles' ).removeClass('color-half');
 	    	$( '#tiles' ).addClass('color-empty');

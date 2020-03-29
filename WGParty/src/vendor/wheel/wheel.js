@@ -14,18 +14,6 @@ var init=false;
 	            color = d3.scale.category20();
 	       
 	 		data=newData;
-//	        data = [
-//	                    {"label":"Vodka",  "value":1,  pic:"vodka.png"}, 
-//	                    {"label":"Jägermeister",  "value":1,  pic:"jaegermeister.png"},
-//	                    {"label":"Teqila",  "value":1,  pic:"tequila.png"},
-//	                    {"label":"Whiskey",  "value":1,  pic:"whiskey.png"}, 
-//	                    {"label":"Berliner Luft",  "value":1,  pic:"berliner_luft.png"}, 
-//	                    {"label":"Bergman Bier",  "value":1,  pic:"bergmann.png"},
-//	                    {"label":"Astra Rakete",  "value":1,  pic:"astra.png"}, 
-//	                    {"label":"Gin",  "value":1,  pic:"gin.png"}, 
-//	                    {"label":"Rum",  "value":1,  pic:"rum.png"},
-//	                    {"label":"Glühwein", "value":1, pic:"gluehwein.png"},
-//	        ];
 
 
 	        svg = d3.select('#chart')
@@ -98,6 +86,12 @@ var init=false;
 	 		init=true;
 		}
 
+		function removeWheel(){
+			document.getElementById("chart").innerHTML="";
+			$('#question').hide();
+            init=false;
+		}
+
 		function activateWheel(){
 	        container.on("click", spin.bind(null,undefined));
 		}
@@ -109,12 +103,10 @@ var init=false;
             // all slices have been seen, all done
 // console.log("OldPick: " + oldpick.length, "Data length: " + data.length);
             if(oldpick.length == data.length){
-                console.log("done");
                 container.on("click", null);
                 return;
             }
             
-            console.log("TYPE:"+(typeof rand)+" = "+rand);
             if(typeof rand === "undefined"){
             	rand = Math.random();
             	
@@ -151,6 +143,7 @@ var init=false;
                         .attr("fill", "#111");
 
                     // populate question
+        			$('#question').show();
                     d3.select("#question").attr("style","");
                     d3.select("#question img").attr("src","images/alk/"+data[picked].pic);
                     d3.select("#question strong").text(data[picked].label);

@@ -8,12 +8,14 @@ include_once 'vendor/utils.php';
 includeAll();
 includeTable();
 includeWheel();
+includeWord();
 includeProfile();
 ?>
 	</head>
 <body class="text-center">
 	<div id="content" style="display: none;">
-		<h1>Dashboard</h1>
+		<div class="word" id="dashboard"></div>
+		<div class="word" id="ingame"></div>
 		<?php include 'vendor/countdown/countdown.html'; ?>
 		<hr>
 		<table class="center" id="table">
@@ -36,9 +38,21 @@ includeProfile();
 		<?php include 'loading.php';?>
 		<?php includeCounter(); ?>
 		<script type="text/javascript">
+			setWord('dashboard','DASHBOARD');
+			setWord('ingame','INGAME','lightgreen');
+			toggle('dashboard');
 			function toggle(v){
 				switch(v){
+				case 'dashboard':
+					$('#dashboard').show();
+					$('#ingame').hide();
+					break;
+				case 'ingame':
+					$('#ingame').show();
+					$('#dashboard').hide();
+					break;
 				case 'table':
+					removeWheel();
 					$('#table').show();
 					$('#stage1').hide();
 					$('#stage2').hide();
@@ -69,12 +83,12 @@ includeProfile();
 						var packet = new StartMatchPacket();
 						packet.parseFromInput(buffer);
 
-
 						localStorage.setItem('p1_uuid',packet.u1_uuid);
 						localStorage.setItem('p1_name',packet.u1_name);
 						
 						localStorage.setItem('p2_uuid',packet.u2_uuid);
 						localStorage.setItem('p2_name',packet.u2_name);
+
 						
 						var p1_r = $('#p1_roulette');
 						p1_r.empty();
@@ -84,14 +98,12 @@ includeProfile();
 						p1_r.roulette({
 							id: "p1",
 							speed : 10,
-							duration : rand(3,5),
+							duration : packet.roulette ? rand(3,5) : 1,
 							stopImageNumber : packet.u1_index,
 							startCallback : function(options) {
 								startCallbackProfile(options.id);
-								console.log('start');
 							},
 							slowDownCallback : function() {
-								console.log('slowDown');
 							},
 							stopCallback : function($stopElm,options) {
 								console.log('stop '+$stopElm.attr('src'));
@@ -108,18 +120,15 @@ includeProfile();
 							img.src = packet.loaded[i].src;
 							p2_r.append(img);
 						}
-						
 						p2_r.roulette({
 							id: "p2",
 							speed : 10,
-							duration : rand(3,5),
+							duration :  packet.roulette ? rand(3,5) : 1,
 							stopImageNumber : packet.u2_index,
 							startCallback : function(options) {
 								startCallbackProfile(options.id);
-								console.log('start');
 							},
 							slowDownCallback : function() {
-								console.log('slowDown');
 							},
 							stopCallback : function($stopElm,options) {
 								console.log('stop '+$stopElm.attr('src'));
@@ -130,15 +139,21 @@ includeProfile();
 
 						$('#p1').hide();
 						$('#p2').hide();
-
 						toggle('stage1');
+						toggle('ingame');
 
-						setTimeout(function(){
+						if(packet.roulette){
+							setTimeout(function(){
+								p1_r.roulette('start');
+							},3000);
+							setTimeout(function(){
+								p2_r.roulette('start');
+							},1500);
+						}else{
 							p1_r.roulette('start');
-						},3000);
-						setTimeout(function(){
 							p2_r.roulette('start');
-						},1500);
+						}
+						
 						break;
 					case WHEELSPIN:
 						var packet = new WheelSpinPacket();
@@ -172,7 +187,14 @@ includeProfile();
 					case COUNTDOWNACK:
 						var packet = new CountdownAckPacket();
 						packet.parseFromInput(buffer);
+						
 						startCountdown(packet.time);
+						setCountdownTitle(packet.text);
+						debug("Set Countdown to "+packet.time+" text:"+packet.text+" time_limit: "+time_limit+" secs");
+						if(packet.text == 'next game in'){
+							toggle("table");
+							toggle('dashboard');
+						}
 						break;
 					case HANDSHAKEACK:
 						var packet = new HandshakeAckPacket(); 
@@ -182,6 +204,10 @@ includeProfile();
 						if(packet.accepted){
 							toggle("table");
 							setLoading(false);
+
+							if(packet.inGame){
+								toggle('ingame');
+							}
 							
 							var packet = new StatsPacket(true);
 							write(packet);

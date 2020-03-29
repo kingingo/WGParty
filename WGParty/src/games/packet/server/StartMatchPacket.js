@@ -3,6 +3,7 @@ var STARTMATCH=0;
 class StartMatchPacket {
 	
 	parseFromInput(buffer){
+		this.roulette = buffer.readBoolean();
 		this.u1_index = buffer.readInt();
 		this.u2_index = buffer.readInt();
 		this.u1_name=buffer.readString();
