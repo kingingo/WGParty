@@ -11,7 +11,9 @@ includeWheel();
 includeWord();
 includeProfile();
 ?>
-	</head>
+<script src="games/higherlower/higherlower.js" type="text/javascript"></script>
+</head>
+
 <body class="text-center">
 	<div id="content" style="display: none;">
 		<div class="word" id="dashboard"></div>
@@ -218,6 +220,28 @@ includeProfile();
 							window.location = "http://"+url;
 						}
 						break;
+					case GAMESTART:
+						var packet = new GameStartPacket();
+						packet.parseFromInput(buffer);
+
+						switch(packet.game){
+						case "higherlower":
+							this.game = new HigherLower(
+								function(){
+									console.log('start higherlower');
+								},
+								function(){
+									console.log('stop higherlower');
+								}
+							);
+							break;
+						default:
+							console.log("Can't found "+packet.game);
+							break;
+						}
+						this.game.start("stage2");
+						toggle("stage2");
+						break;
 					case STATSACK:
 						var packet = new StatsAckPacket();
 						packet.parseFromInput(buffer);
@@ -238,7 +262,12 @@ includeProfile();
 						}
 						break;
 					default:
-						console.log("Packet "+packetId+" not found!");
+						if(this.game != undefined){
+							this.game.onmessage(packetId,buffer);
+						}else{
+							console.log("Packet "+packetId+" not found!");
+						}
+						
 						break;
 					}
 				});

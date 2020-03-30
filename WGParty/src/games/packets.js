@@ -1,4 +1,13 @@
-GAMESTART=0;
+class GameStartAckPacket {
+	constructor(){
+		this.id=GAMESTARTACK;
+	}
+	
+	parseToOutput(){
+		this.buffer = new dcodeIO.ByteBuffer(8,false,false);
+		return this.buffer;
+	}
+}
 
 class GameStartPacket {
 	parseFromInput(buffer){

@@ -67,8 +67,8 @@ function includeAll(){
 }
 
 function includePackets(){
-    includePath("games/packet/client/");
-    includePath("games/packet/server/");
+    echo '<script src="games/packet/client/packets.js"></script>';
+    echo '<script src="games/packet/server/packets.js"></script>';
 }
 
 function includePath($path){

@@ -1,11 +1,9 @@
-import "../packets.js";
-
-HIGHERLOWERSEARCHCHOOSE=0;
-HIGHERLOWERSEARCHPACKET=0;
+loadScript("games/packets.js");
 
 class HigherLowerSearchChoosePacket{
 	constructor(higher){
 		this.higher=higher;
+		this.id=HIGHERLOWERSEARCHCHOOSE;
 	}
 	
 	parseToOutput(){
@@ -20,7 +18,7 @@ class HigherLowerSearchPacket {
 		var length = buffer.readInt();
 		this.list = [];
 		for(var i = 0; i < length; i++){
-			list.push({"request":buffer.readString(),"path":buffer.readString(),"amount":buffer.readInt()});
+			this.list.push({"request":buffer.readString(),"path":replaceAll(buffer.readString(),";","/"),"amount":buffer.readInt()});
 		}
 	}
 	
@@ -28,3 +26,7 @@ class HigherLowerSearchPacket {
 		return "list:"+list.length;
 	}
 }
+
+function replaceAll(str, find, replace) {
+	  return str.replace(new RegExp(find, 'g'), replace);
+	}

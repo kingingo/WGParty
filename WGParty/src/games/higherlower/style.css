@@ -1,10 +1,29 @@
-/* Pen-specific styles */
-* {
+.higherlower {
+	height: 100%;
 	box-sizing: border-box;
 }
 
-html, body, section, div {
-	height: 100%;
+.hl_button{
+	background-color: Transparent;
+    background-repeat:no-repeat;
+    cursor:pointer;
+    overflow: hidden;
+    width: 12.5rem;
+    padding: 1rem;
+    color:#fff989;
+	font-weight: bold;
+	border-radius: 2.5em;
+	border: .125rem solid #fff;
+    -webkit-box-shadow: 0 0.9375rem 2.5rem 0 rgba(0,0,0,.1);
+    box-shadow: 0 0.9375rem 2.5rem 0 rgba(0,0,0,.1);
+    outline: 0;
+	display: block;
+	margin: 0px auto 10px;
+}
+
+.hl_button:hover{
+	background-color: white;
+	color: black;
 }
 
 #left_request {

@@ -39,7 +39,7 @@ function connect(onopen, onmessage){
 	      buffer.readInt();
 	      var packetId = buffer.readInt();
 	      
-	      if(packetId==IDS){
+	      if(packetId==0){
 	    	  var packet = new IdsPacket();
 	    	  packet.parseFromInput(buffer);
 	    	  debug("Received IdsPacket("+packet.toString()+")");
@@ -47,7 +47,7 @@ function connect(onopen, onmessage){
 	    	  
 	    	  for(var i = 0; i < list.length; i++){
 	    		  window[list[i].packet]=list[i].id;
-	    		  debug(list[i].packet+" set id to "+list[i].id == window[list[i].packet]);
+	    		  debug(list[i].packet+" set id to "+ window[list[i].packet]);
 	    	  }
 	    	  onopen();
 	      }else if(packetId==PING){
@@ -69,6 +69,13 @@ function connect(onopen, onmessage){
 	      setTimeout(function(){connect(onopen,onmessage)}, 5000);
 	  };
   }
+
+function loadScript(url) {
+    var script = document.createElement("script");  // create a script DOM node
+    script.src = url;  // set its src to the provided URL
+
+    document.head.appendChild(script);  // add it to the end of the head section of the page (could change 'head' to 'body' to add it to the end of the body section instead)
+}
 
 function debug(msg){
 	console.log("DEBUG: "+msg);
