@@ -86,8 +86,24 @@ function includePath($path){
 ?>
 
 <script>
+
+function getUUID2(){
+	return localStorage.getItem('p2_uuid');
+}
+
+function getUUID1(){
+	return localStorage.getItem('p1_uuid');
+}
+
 function rand(min,max){
 	return Math.floor((Math.random() * max) + min);
+}
+
+function getUUIDO(){
+	if(localStorage.getItem('p1_uuid') == getUUID()){
+		return localStorage.getItem('p2_uuid');
+	}
+	return localStorage.getItem('p1_uuid');
 }
 
 function getUUID(){

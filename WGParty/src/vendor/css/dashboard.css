@@ -25,6 +25,13 @@ table {
 	background-color:white;
 }
 
+#mini-profile{
+    width: 75px;
+    height: 75px;
+    position: relative;
+    float: left;
+}
+
 th, td {
   padding: 15px;
   text-align: left;
@@ -35,4 +42,35 @@ th, td {
 	margin-top: 50px;
 	margin-left:auto;
 	margin-right:auto;
+}
+
+.stage0{
+	 height: 100%;
+	box-sizing: border-box;
+}
+
+.stage0 .left{
+	background-color:red;
+}
+
+.stage0 .right{
+	background-color:green;
+}
+
+.stage0 .left, .stage0 .right {
+	height:500px;
+	position: relative;
+	background: round;
+	float: left;
+	width: 50%;
+	overflow: hidden;
+	background-size: cover;
+	text-align: center;
+}
+
+@media only screen and (max-width: 1000px) {
+	.stage0 .left, .stage0 .right {
+		height: 50%;
+		width: 100%;
+	}
 }

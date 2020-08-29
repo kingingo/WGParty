@@ -59,6 +59,39 @@ class RegisterPacket{
 	
 }
 
+class GameEndPacket {
+	constructor(){
+		this.id=GAMEEND;
+	}
+	
+	parseToOutput(){
+		this.buffer = new dcodeIO.ByteBuffer(8,false,false);
+		return this.buffer;
+	}
+}
+
+class GameStartAckPacket {
+	constructor(){
+		this.id=GAMESTARTACK;
+	}
+	
+	parseToOutput(){
+		this.buffer = new dcodeIO.ByteBuffer(8,false,false);
+		return this.buffer;
+	}
+}
+
+class PlayerReadyPacket {
+	constructor(){
+		this.id=PLAYERREADY;
+	}
+	
+	parseToOutput(){
+		this.buffer = new dcodeIO.ByteBuffer(8,false,false);
+		return this.buffer;
+	}
+}
+
 class StatsPacket{
 	
 	constructor(update){

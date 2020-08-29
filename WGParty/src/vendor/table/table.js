@@ -66,14 +66,24 @@
 				}
 			
 			function updateRow(stats, el){
-				if(el.childNodes[1].innerHTML!=stats.wins.toString()){
+				var wins = getStat(stats.stats,"wins");
+				var loses = getStat(stats.stats,"loses");
+				
+				if(el.childNodes[1].innerHTML!=wins.toString()){
 					explodeElement(el.childNodes[1]);
-					el.childNodes[1].innerHTML=stats.wins;
+					el.childNodes[1].innerHTML=wins;
 				}
-				if(el.childNodes[2].innerHTML!=stats.loses.toString()){
+				if(el.childNodes[2].innerHTML!=loses.toString()){
 					explodeElement(el.childNodes[2]);
-					el.childNodes[2].innerHTML=stats.loses;
+					el.childNodes[2].innerHTML=loses;
 				}
+			}
+			
+			function getStat(stats, key){
+				for (var i = 0; i < stats.length; i++) {
+					if(stats[i].key == key)return stats[i].value;
+				}
+				return "not found";
 			}
 
 			function createRow(stats){
@@ -85,11 +95,11 @@
 				tr.appendChild(td);
 
 				td = td.cloneNode(false);
-				td.innerHTML=stats.wins;
+				td.innerHTML=getStat(stats.stats,'wins');
 				tr.appendChild(td);
 
 				td = td.cloneNode(false);
-				td.innerHTML=stats.loses;
+				td.innerHTML=getStat(stats.stats,'loses');
 				tr.appendChild(td);
 
 				return tr;

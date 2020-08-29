@@ -8,7 +8,27 @@ class CountdownAckPacket {
 	toString(){
 		return "time:"+this.time;
 	}
-}var HANDSHAKEACK=0;
+}
+
+class GameStartPacket {
+	parseFromInput(buffer){
+		this.game = buffer.readString();
+	}
+	
+	toString(){
+		return "game:"+(typeof this.game == "undefined" ? "undefined" : this.game);
+	}
+}
+
+class PlayerReadyAckPacket {
+	parseFromInput(buffer){
+		this.uuid = buffer.readString();
+	}
+	
+	toString(){
+		return "Uuid:"+(typeof this.uuid == "undefined" ? "undefined" : this.uuid);
+	}
+}
 
 class HandshakeAckPacket {
 	
@@ -43,16 +63,19 @@ class IdsPacket {
 class MatchPacket {
 	
 	parseFromInput(buffer){
-		this.winner = buffer.readString();
-		this.winner_uuid = buffer.readString();
-		
-		this.loser = buffer.readString();
-		this.loser_uuid = buffer.readString();
-		
-		this.alk = [];
-		var length = buffer.readInt();
-		for(var i = 0; i < length; i++){
-			this.alk.push({"label":buffer.readString(),  "value":buffer.readInt(),  "pic":buffer.readString()});
+		this.drawn = buffer.readBoolean();
+		if(!this.drawn){
+			this.winner = buffer.readString();
+			this.winner_uuid = buffer.readString();
+			
+			this.loser = buffer.readString();
+			this.loser_uuid = buffer.readString();
+			
+			this.alk = [];
+			var length = buffer.readInt();
+			for(var i = 0; i < length; i++){
+				this.alk.push({"label":buffer.readString(),  "value":buffer.readInt(),  "pic":buffer.readString()});
+			}
 		}
 	}
 	
@@ -116,8 +139,36 @@ class StatsAckPacket {
 		this.list = [];
 		
 		for(var i = 0; i < length; i++){
-			this.list.push({name:buffer.readString(), uuid:buffer.readString(), wins:buffer.readInt(),loses:buffer.readInt()});
+			this.list.push({name:buffer.readString()
+				, uuid:buffer.readString()
+				, stats: this.parseFromInputStats(buffer)});
 		}
+	}
+	
+	parseFromInputStats(buffer){
+		var length = buffer.readInt();
+		var stats = [];
+		
+		for(var i = 0; i<length; i++){
+			var key = buffer.readString();
+			var type = buffer.readByte();
+			var value;
+			
+			switch(type){
+			case 1:
+				value = buffer.readInt();
+				break;
+			case 2:
+				value = buffer.readBoolean();
+				break;
+			default:
+				console.log("Stats type "+type+" by key "+key+" not found!");
+				break;
+			}
+			
+			stats.push({'key':key, 'value': value});
+		}
+		return stats;
 	}
 	
 	toString(){

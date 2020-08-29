@@ -10,9 +10,11 @@
 </head>
 
 <body class="text-center">
+	
 	<form id="content" style="display:none">
 		<img class="mb-4" src="images/logo.png"
 			alt="" width="auto" height="45%">
+		<a id="guest" style="color:slategray;position:absolute;font-size:xx-small;">GAST ZUGANG</a>
 		<h1 class="h3 mb-3 font-weight-normal">Anmeldung zum Trinkspiel ;)</h1>
 		<label for="inputEmail" class="sr-only">Name</label>
 		<input type="text" id="name" class="form-control" placeholder="Name"> 
@@ -23,6 +25,21 @@
 	</form>
 	
 	<?php include 'loading.php';?>
+	
+	<script type="text/javascript">
+	$("#guest").on("click",function(e){
+		var uuid;
+		
+		if(window.location.hostname == "localhost"){
+			uuid = "0b2fbcca-cf27-4ffc-9f86-e3722ef69eb1";
+		} else if(window.location.hostname == "127.0.0.1"){
+			uuid = "7bfef58b-ebda-4e83-845d-80fea4cadb0e";
+		}else console.log("HOST:"+window.location.hostname);
+
+		setCookie("SID",uuid,7);
+		write(new HandshakePacket(uuid,2));
+	});
+	</script>
 	
 	<script type="text/javascript">
 	$(document).ready(function () {

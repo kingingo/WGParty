@@ -16,6 +16,9 @@
 	function setStatus(id, win){
 		var k = $('#'+id+'_krone');
 		var l = $('#'+id+'_loser');
+		
+		console.log("STATUS "+id+" win: "+win);
+		
 		if(win){
 			k.show();
 			l.hide();

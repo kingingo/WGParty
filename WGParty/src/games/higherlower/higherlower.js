@@ -9,11 +9,11 @@ class HigherLower{
 	}
 	
 	answer(b){
-		var packet = new HigherLowerSearchChoosePacket(b);
+		var packet = new HigherLowerSearchChoosePacket(b,this.currentIndex, this.currentIndex+1);
 		write(packet);
 
-		this.right_request_amount.innerHTML = this.list[this.currentIndex].amount;
-		if(this.list[this.currentIndex].amount > this.list[this.currentIndex-1].amount){
+		this.right_request_amount.innerHTML = this.numberWithCommas(this.right_pic.amount);
+		if(this.right_pic.amount > this.left_pic.amount){
 			this.higher.style="background-color:green;";
 			this.lower.style="background-color:red;";
 		}else{
@@ -21,61 +21,86 @@ class HigherLower{
 			this.lower.style="background-color:green;";
 		}
 		
-		this.hide();
-		if((this.list[this.currentIndex].amount > this.list[this.currentIndex-1].amount) == b){
-			//RICHTIG
-			this.vs.innerHTML="✔";
-			this.vs.style="background-color:green;";
+		setTimeout(function(tthis){
+			tthis.hide();
+			if((tthis.right_pic.amount > tthis.left_pic.amount) == b){
+				//RICHTIG
+				tthis.vs.innerHTML="✔";
+				tthis.vs.style="background-color:green;";
+			}else{
+				//FALSCH
+				tthis.vs.innerHTML="✘";
+				tthis.vs.style="background-color:red;";
+			}
+			
+			setTimeout(function(tthis){tthis.next();}.bind(null,tthis),500);
+		}.bind(null,this),1000);
+	}
+	
+	next(){
+		this.log("LOG: "+this.currentIndex+" "+this.list.length);
+		if( (this.currentIndex+2) > (this.list.length-1) ){
+			this.end();
 		}else{
-			//FALSCH
-			this.vs.innerHTML="✘";
-			this.vs.style="background-color:red;";
+			this.set(this.currentIndex+2);
 		}
 	}
 	
+	reset(){
+		this.vs.innerHTML="";
+		this.vs.style="";
+
+		this.higher.style="";
+		this.lower.style="";
+	}
+	
 	hide(){
-		$('#higher').hide();
-		$('#lower').hide();
+		$('#hl-higher').hide();
+		$('#hl-lower').hide();
 		
-		$('#right_request_amount').show();
+		$('#hl-right_request_amount').show();
 	}
 	
 	show(){
-		$('#higher').show();
-		$('#lower').show();
+		$('#hl-higher').show();
+		$('#hl-lower').show();
 		
-		$('#right_request_amount').hide();
+		$('#hl-right_request_amount').hide();
 	}
 	
 	onmessage(packetId, buffer){
 		 if(this.active){
 			 switch(packetId){
 			 	case HIGHERLOWERSEARCH:
+					this.log("GOT HIGHERLOWERSEARCH");
 			 		var packet = new HigherLowerSearchPacket();
 			 		packet.parseFromInput(buffer);
 			 		
 			 		//request, path, amount
 			 		this.list = packet.list;
-			 		this.set(1);
+			 		this.set(0);
 				 break;
 			  default:
-				  log("Packet "+packetId+" not found");
+				  this.log("Packet "+packetId+" not found");
 				  break;
 			 }
 		 }
 	}
 	
 	set(index){
+		this.reset();
+		this.show();
 		this.currentIndex = index;
-		//background-image: url('http://api.higherlowergame.com/_client/images/general/truman-show.jpg');
-		console.log("SETTED");
-		this.left.style="background-image: url("+this.list[index-1].path+");";
-		console.log("SETTED "+this.left.style);
-		this.left_request.innerHTML = this.list[index-1].request;
-		this.left_request_amount.innerHTML = this.list[index-1].amount;
+		this.log("Set "+index);
+		this.left_pic = this.list[this.currentIndex];
+		this.right_pic = this.list[this.currentIndex+1];
 		
-		this.right.style="background-image: url("+this.list[index].path+");";
-		this.right_request.innerHTML = this.list[index].request;
+		this.left.style="background-image: url("+this.left_pic.path+");";
+		this.left_request.innerHTML = this.left_pic.request;
+		this.left_request_amount.innerHTML = this.numberWithCommas(this.left_pic.amount);
+		
+		this.right.style="background-image: url("+this.right_pic.path+");";
+		this.right_request.innerHTML = this.right_pic.request;
 	}
 	
 	end(){
@@ -85,34 +110,38 @@ class HigherLower{
 		$('#'+this.containerId).html("");
 	}
 	
+	numberWithCommas(x) {
+	    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	}
+	
 	start(containerId){
 		this.active=true;
 		this.containerId=containerId;
 		$.get("games/higherlower/index.php", function (tthis, data) {
             $("#"+containerId).append(data);
-            tthis.left=document.getElementsByClassName("left-half")[0];
-            tthis.left_request=document.getElementById("left_request");
-            tthis.left_request_amount=document.getElementById("left_request_amount");
+            tthis.left=document.getElementsByClassName("hl-left-half")[0];
+            tthis.left_request=document.getElementById("hl-left_request");
+            tthis.left_request_amount=document.getElementById("hl-left_request_amount");
 
-            tthis.right=document.getElementsByClassName("right-half")[0];
-            tthis.right_request=document.getElementById("right_request");
-            tthis.right_request_amount=document.getElementById("right_request_amount");
+            tthis.right=document.getElementsByClassName("hl-right-half")[0];
+            tthis.right_request=document.getElementById("hl-right_request");
+            tthis.right_request_amount=document.getElementById("hl-right_request_amount");
     		
     		//Buttons
-            tthis.higher = document.getElementById('higher');
+            tthis.higher = document.getElementById('hl-higher');
     		if(tthis.higher!=null)tthis.higher.addEventListener("click", function(){tthis.answer(true);});
-    		else console.log('higher null');
-    		tthis.lower = document.getElementById('lower');
+    		else tthis.log('higher null');
+    		tthis.lower = document.getElementById('hl-lower');
     		if(tthis.lower!=null)tthis.lower.addEventListener("click", function(){tthis.answer(false);});
-    		else console.log('lower null');
+    		else tthis.log('lower null');
     		
-    		tthis.vs = document.getElementById('vs');
+    		tthis.vs = document.getElementById('hl-vs');
     		
     		tthis.callbackStart();
-    		tthis.show();
     		
     		var packet = new GameStartAckPacket();
     		write(packet);
+    		tthis.log("write GameStartAckPacket to Server");
         }.bind(null,this));
 	}
 	
