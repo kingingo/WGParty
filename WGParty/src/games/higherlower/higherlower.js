@@ -2,8 +2,9 @@ loadScript("games/higherlower/packets.js");
 
 class HigherLower{
 	
-	constructor(callbackStart, callbackEnd){
+	constructor(spectate, callbackStart, callbackEnd){
 		this.active=false;
+		this.spectate=spectate;
 		this.callbackStart = callbackStart;
 		this.callbackEnd = callbackEnd;
 	}
@@ -68,17 +69,42 @@ class HigherLower{
 		$('#hl-right_request_amount').hide();
 	}
 	
+	setspec(index, right){
+		for(var i = 1; i<4; i++){
+			var el = document.getElementById("hl_spec_"+i+"_"+index);
+			
+			if(el.innerHTML == '-'){
+				el.innerHTML = (right ? "+1" : "lost");
+				break;
+			}
+		}
+	}
+	
 	onmessage(packetId, buffer){
 		 if(this.active){
 			 switch(packetId){
+			 	case HIGHERLOWERANSWERED:
+				 if(this.spectate){
+					 var packet = new HigherLowerAnsweredPacket();
+				 	 packet.parseFromInput(buffer);
+				 	 
+				 	 if(getUUID1() == packet.uuid){
+				 		this.setspec(1,packet.right);
+				 	 }else if(getUUID2() == packet.uuid){
+				 		this.setspec(2,packet.right);
+				 	 }
+				 }
+				 break;
 			 	case HIGHERLOWERSEARCH:
-					this.log("GOT HIGHERLOWERSEARCH");
-			 		var packet = new HigherLowerSearchPacket();
-			 		packet.parseFromInput(buffer);
-			 		
-			 		//request, path, amount
-			 		this.list = packet.list;
-			 		this.set(0);
+					if(!this.spectate){
+						this.log("GOT HIGHERLOWERSEARCH");
+				 		var packet = new HigherLowerSearchPacket();
+				 		packet.parseFromInput(buffer);
+				 		
+				 		//request, path, amount
+				 		this.list = packet.list;
+				 		this.set(0);
+					}
 				 break;
 			  default:
 				  this.log("Packet "+packetId+" not found");
@@ -117,32 +143,43 @@ class HigherLower{
 	start(containerId){
 		this.active=true;
 		this.containerId=containerId;
-		$.get("games/higherlower/index.php", function (tthis, data) {
-            $("#"+containerId).append(data);
-            tthis.left=document.getElementsByClassName("hl-left-half")[0];
-            tthis.left_request=document.getElementById("hl-left_request");
-            tthis.left_request_amount=document.getElementById("hl-left_request_amount");
+		document.getElementById(containerId).innerHTML = "";
+		
+		if(this.spectate){
+			$.get("games/higherlower/spectate.php", function (tthis, data) {
+	            $("#"+containerId).append(data);
+	            document.getElementById('hl_spec_1').innerHTML = localStorage.getItem('p1_name');
+	            document.getElementById('hl_spec_2').innerHTML = localStorage.getItem('p2_name');
+	    		tthis.callbackStart();
+			}.bind(null,this));
+		}else{
+			$.get("games/higherlower/index.php", function (tthis, data) {
+	            $("#"+containerId).append(data);
+	            tthis.left=document.getElementsByClassName("hl-left-half")[0];
+	            tthis.left_request=document.getElementById("hl-left_request");
+	            tthis.left_request_amount=document.getElementById("hl-left_request_amount");
 
-            tthis.right=document.getElementsByClassName("hl-right-half")[0];
-            tthis.right_request=document.getElementById("hl-right_request");
-            tthis.right_request_amount=document.getElementById("hl-right_request_amount");
-    		
-    		//Buttons
-            tthis.higher = document.getElementById('hl-higher');
-    		if(tthis.higher!=null)tthis.higher.addEventListener("click", function(){tthis.answer(true);});
-    		else tthis.log('higher null');
-    		tthis.lower = document.getElementById('hl-lower');
-    		if(tthis.lower!=null)tthis.lower.addEventListener("click", function(){tthis.answer(false);});
-    		else tthis.log('lower null');
-    		
-    		tthis.vs = document.getElementById('hl-vs');
-    		
-    		tthis.callbackStart();
-    		
-    		var packet = new GameStartAckPacket();
-    		write(packet);
-    		tthis.log("write GameStartAckPacket to Server");
-        }.bind(null,this));
+	            tthis.right=document.getElementsByClassName("hl-right-half")[0];
+	            tthis.right_request=document.getElementById("hl-right_request");
+	            tthis.right_request_amount=document.getElementById("hl-right_request_amount");
+	    		
+	    		//Buttons
+	            tthis.higher = document.getElementById('hl-higher');
+	    		if(tthis.higher!=null)tthis.higher.addEventListener("click", function(){tthis.answer(true);});
+	    		else tthis.log('higher null');
+	    		tthis.lower = document.getElementById('hl-lower');
+	    		if(tthis.lower!=null)tthis.lower.addEventListener("click", function(){tthis.answer(false);});
+	    		else tthis.log('lower null');
+	    		
+	    		tthis.vs = document.getElementById('hl-vs');
+	    		
+	    		tthis.callbackStart();
+	    		
+	    		var packet = new GameStartAckPacket();
+	    		write(packet);
+	    		tthis.log("write GameStartAckPacket to Server");
+	        }.bind(null,this));
+		}
 	}
 	
 	log(msg){

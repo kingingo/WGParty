@@ -325,9 +325,16 @@ includeProfile();
 						var packet = new GameStartPacket();
 						packet.parseFromInput(buffer);
 
+						var spectate = true;
+
+						if(getUUID() == getUUID1() || getUUID() == getUUID2()){
+							spectate=false;
+						}
+						console.log("SPECTATE: "+spectate);
+
 						switch(packet.game){
 						case "higherlower":
-							this.game = new HigherLower(
+							this.game = new HigherLower(spectate,
 								function(){
 									console.log('start higherlower');
 								},

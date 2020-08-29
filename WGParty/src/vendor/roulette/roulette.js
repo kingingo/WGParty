@@ -185,7 +185,7 @@
 			var roulette = self.data('plugin_' + pluginName);
 			
 			if (roulette) {
-				if(method.toUpperCase() == 'REMOVE'){
+				if(method == 'remove'){
 					self.removeData('plugin_'+pluginName);
 				}else if (roulette[method]) {
 					roulette[method](options);

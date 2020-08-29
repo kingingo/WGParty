@@ -15,6 +15,17 @@ class HigherLowerSearchChoosePacket{
 	}
 }
 
+class HigherLowerAnsweredPacket {
+	parseFromInput(buffer){
+		this.uuid = buffer.readString();
+		this.right = buffer.readBoolean();
+	}
+	
+	toString(){
+		return "uuid:"+this.uuid+" right:"+this.right;
+	}
+}
+
 class HigherLowerSearchPacket {
 	parseFromInput(buffer){
 		var length = buffer.readInt();
