@@ -1,5 +1,5 @@
-var socket;
-var url = "192.168.178.23";
+var websocket;
+var url = "192.168.178.23:8887";
 
 function write(packet){
 	var b = packet.parseToOutput();
@@ -17,58 +17,84 @@ function write(packet){
 	
 	if(!relative)data.writeBytes(b.buffer);
 	
-	socket.send(data.buffer);
+	websocket.send(data.buffer);
 }
 
-function connect(onopen, onmessage){
-	  socket = new WebSocket("ws://"+url+":8887");
+function connect(timeout = 2000,onopen, onmessage){
+	new Promise(function(resolve, reject) {
+		debug("try to connect to "+url+"... (timeout:"+timeout+")");
+		const socket = new WebSocket("ws://"+url);
+			
+	      const timer = setTimeout(function() {
+	          done();
+	          socket.close();
+	          reject(new Error("webSocket timeout"));
+	      }, timeout);
+        
+        function done() {
+            // cleanup all state here
+            clearTimeout(timer);
+            socket.removeEventListener('error', error);
+        }
+
+        function error(e) {
+            reject(e);
+            done();
+        }
+
+        socket.addEventListener('open', function() {
+            resolve(socket);
+            done();
+        });
+        socket.addEventListener('error', error);
+        
+        socket.onopen = function () {
+  		  debug("connection established");
+  	  };
+
 	  socket.binaryType="arraybuffer";
-	  // callback-Funktion wird gerufen, wenn die Verbindung erfolgreich
-	  // aufgebaut werden konnte
-	  
-	  socket.onopen = function () {
-		  debug("Verbindung wurde erfolgreich aufgebaut");
-	  };
+  	  socket.onmessage = function(messageEvent){
+  		  var data = messageEvent.data;
+  	      var buffer = dcodeIO.ByteBuffer.wrap(data,"binary",false,false);
 
-	  // callback-Funktion wird gerufen, wenn eine neue Websocket-Nachricht
-	  // eintrifft
-	  socket.onmessage = function(messageEvent){
-		  var data = messageEvent.data;
-	      var buffer = dcodeIO.ByteBuffer.wrap(data,"binary",false,false);
+  	      buffer.readInt();
+  	      var packetId = buffer.readInt();
+  	      
+  	      if(packetId==0){
+  	    	  var packet = new IdsPacket();
+  	    	  packet.parseFromInput(buffer);
+  	    	  debug("Received IdsPacket("+packet.toString()+")");
+  	    	  var list = packet.list;
+  	    	  
+  	    	  for(var i = 0; i < list.length; i++){
+  	    		  window[list[i].packet]=list[i].id;
+  	    		  debug(list[i].packet+" set id to "+ window[list[i].packet]);
+  	    	  }
+  	    	  onopen();
+  	      }else if(packetId==PING){
+  	    	  write(new PongPacket());
+  	      }else{
+  		      onmessage(packetId, buffer);  
+  	      }
+  	  };
+  	  
+  	  // callback-Funktion wird gerufen, wenn ein Fehler auftritt
+  	  socket.onerror = function (errorEvent) {
+  		  debug("Error! The connection was unexpectedly closed --- Code: '" + errorEvent.code + " --- Reason: " +errorEvent.reason);
+  	  };
 
-	      buffer.readInt();
-	      var packetId = buffer.readInt();
-	      
-	      if(packetId==0){
-	    	  var packet = new IdsPacket();
-	    	  packet.parseFromInput(buffer);
-	    	  debug("Received IdsPacket("+packet.toString()+")");
-	    	  var list = packet.list;
-	    	  
-	    	  for(var i = 0; i < list.length; i++){
-	    		  window[list[i].packet]=list[i].id;
-	    		  debug(list[i].packet+" set id to "+ window[list[i].packet]);
-	    	  }
-	    	  onopen();
-	      }else if(packetId==PING){
-	    	  write(new PongPacket());
-	      }else{
-		      onmessage(packetId, buffer);  
-	      }
-	  };
-	  
-	  // callback-Funktion wird gerufen, wenn ein Fehler auftritt
-	  socket.onerror = function (errorEvent) {
-	      console.log("Error! Die Verbindung wurde unerwartet geschlossen");
-	  };
-
-	  socket.onclose = function (closeEvent) {
-		  setLoading(true);
-	      console.log('Die Verbindung wurde geschlossen --- Code: ' + closeEvent.code + ' --- Grund: ' + closeEvent.reason);
-	      // connect after 5 sec
-	      setTimeout(function(){connect(onopen,onmessage)}, 5000);
-	  };
-  }
+  	  socket.onclose = function (closeEvent) {
+  		  setLoading(true);
+  		  debug('The connection was closed --- Code: ' + closeEvent.code + ' --- Reason: ' + closeEvent.reason);
+  	      socket.close();
+		  window.initConnection();
+  	  };
+	}).then(function(socket) {
+		   window.websocket = socket;
+	}).catch(function(err) {
+	    console.log(err);
+	});
+}
 
 function loadScript(url) {
     var script = document.createElement("script");  // create a script DOM node
@@ -79,4 +105,27 @@ function loadScript(url) {
 
 function debug(msg){
 	console.log("DEBUG: "+msg);
+}
+
+class Game{
+	constructor(game,spectate, callbackEnd){
+		this.active=false;
+		this.game=game;
+		this.spectate=spectate;
+		this.callbackEnd = callbackEnd;
+	}
+	
+	end(){
+		this.callbackEnd();
+		this.active=false;
+	}
+	
+	start(containerId){
+		this.active=true;
+		this.containerId=containerId;
+	}
+	
+	log(msg){
+		console.log(this.game+" | "+msg);
+	}
 }

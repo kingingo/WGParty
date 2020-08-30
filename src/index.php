@@ -14,7 +14,6 @@
 	<form id="content" style="display:none">
 		<img class="mb-4" src="images/logo.png"
 			alt="" width="auto" height="45%">
-		<a id="guest" style="color:slategray;position:absolute;font-size:xx-small;">GAST ZUGANG</a>
 		<h1 class="h3 mb-3 font-weight-normal">Anmeldung zum Trinkspiel ;)</h1>
 		<label for="inputEmail" class="sr-only">Name</label>
 		<input type="text" id="name" class="form-control" placeholder="Name"> 
@@ -22,6 +21,7 @@
 		<input name="picture" id="pic" class="form-control" type="file" size="50" accept="image/jpeg, image/png">
 		<button class="btn btn-lg btn-primary btn-block" id="submit_button" type="submit">Anmelden</button>
 		<p class="mt-5 mb-3 text-muted">Powered by FELIX</p>
+		<a id="guest" style="color:slategray;font-size:xx-small;">GAST ZUGANG</a>
 	</form>
 	
 	<?php include 'loading.php';?>
@@ -34,6 +34,8 @@
 			uuid = "0b2fbcca-cf27-4ffc-9f86-e3722ef69eb1";
 		} else if(window.location.hostname == "127.0.0.1"){
 			uuid = "7bfef58b-ebda-4e83-845d-80fea4cadb0e";
+		} else if(window.location.hostname == "192.168.178.23"){
+			uuid = "697615a1-f64c-4e97-beb0-c458ac531045";
 		}else console.log("HOST:"+window.location.hostname);
 
 		setCookie("SID",uuid,7);
@@ -42,8 +44,8 @@
 	</script>
 	
 	<script type="text/javascript">
-	$(document).ready(function () {
-        connect(function(){
+	function initConnection(){
+		connect(5000,function(){
         	if(checkCookie("SID")){
         		var uuid = getCookie("SID");
         		debug("Cookie found UUID -> "+uuid);
@@ -83,6 +85,11 @@
 			  console.log("Couldn't find packetId "+packetId);
 		  }
 	  });
+	}
+	
+	$(document).ready(function () {
+		window.initConnection = initConnection;
+		initConnection();
 
         $("#submit_button").click(function (event) {
             event.preventDefault();

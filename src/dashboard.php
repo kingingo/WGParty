@@ -12,6 +12,7 @@ includeWord();
 includeProfile();
 ?>
 <script src="games/higherlower/higherlower.js" type="text/javascript"></script>
+<script src="games/pingpong/pingpong.js" type="text/javascript"></script>
 </head>
 
 <body class="text-center">
@@ -120,15 +121,9 @@ includeProfile();
 				toggle('table');
 			}
 			init();
-			
-			$(document).ready(function(){
-				addCountdownTitleClass('countdown_min');
-				setCountdownSize('1em');
-				setCountdownPos('static');
-				setCountdownTitle('next game in');
-				$("#mini-profile").attr("src","/images/profiles/resize/"+getUUID()+".jpg");
-				
-				connect(cookieCheck,function(packetId, buffer){
+
+			function initConnection(){
+				connect(5000,cookieCheck,function(packetId, buffer){
 					switch(packetId){
 					case READY:
 						$("#left-stage0").css("background-color","red");
@@ -261,7 +256,7 @@ includeProfile();
 					case MATCH:
 						var packet = new MatchPacket();
 						packet.parseFromInput(buffer);
-
+						this.game.end();
 						//UNENTSCHIEDEN!!!!
 						if(packet.drawn){
 							console.log("Unentschieden: "+packet.winner+"(=="+localStorage.getItem('p1_name')+") "+packet.loser);
@@ -326,7 +321,6 @@ includeProfile();
 						packet.parseFromInput(buffer);
 
 						var spectate = true;
-
 						if(getUUID() == getUUID1() || getUUID() == getUUID2()){
 							spectate=false;
 						}
@@ -336,10 +330,18 @@ includeProfile();
 						case "higherlower":
 							this.game = new HigherLower(spectate,
 								function(){
-									console.log('start higherlower');
-								},
-								function(){
 									console.log('stop higherlower');
+									var packet = new GameEndPacket();
+									write(packet);
+									
+									toggle("stage1");
+								}
+							);
+							break;
+						case "pingpong":
+							this.game = new PingPong(spectate,
+								function(){
+									console.log('stop PingPong');
 									var packet = new GameEndPacket();
 									write(packet);
 									
@@ -383,6 +385,16 @@ includeProfile();
 						break;
 					}
 				});
+			}
+			
+			$(document).ready(function(){
+				addCountdownTitleClass('countdown_min');
+				setCountdownSize('1em');
+				setCountdownPos('static');
+				setCountdownTitle('next game in');
+				$("#mini-profile").attr("src","/images/profiles/resize/"+getUUID()+".jpg");
+				window.initConnection=initConnection;
+				initConnection();
 			});
 
 			

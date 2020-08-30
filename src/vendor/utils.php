@@ -87,6 +87,14 @@ function includePath($path){
 
 <script>
 
+function getName2(){
+	return localStorage.getItem('p2_name');
+}
+
+function getName1(){
+	return localStorage.getItem('p1_name');
+}
+
 function getUUID2(){
 	return localStorage.getItem('p2_uuid');
 }
