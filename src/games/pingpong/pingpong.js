@@ -243,6 +243,10 @@ class PingPong extends Game{
 //	    scoreSound.play();
 	    // then user scored 1 point
 		this.user1.score += 1;
+		if(!this.spectate){
+			write(new PingPongGoalPacket(this.user1.uuid,this.user1.score));
+		}
+			
 		this.reset();
 	  }
 
@@ -252,6 +256,10 @@ class PingPong extends Game{
 //	    scoreSound.play();
 	    // then ai scored 1 point
 		this.user2.score += 1;
+		if(!this.spectate){
+			write(new PingPongGoalPacket(this.user2.uuid,this.user2.score));
+		}
+			
 	    this.reset();
 	  }
 

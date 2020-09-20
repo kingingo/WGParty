@@ -31,7 +31,7 @@
 		var uuid;
 		
 		if(window.location.hostname == "localhost"){
-			uuid = "0b2fbcca-cf27-4ffc-9f86-e3722ef69eb1";
+			uuid = "138cbd2a-8db2-4a28-bdbd-03df5d64851a";
 		} else if(window.location.hostname == "127.0.0.1"){
 			uuid = "7bfef58b-ebda-4e83-845d-80fea4cadb0e";
 		} else if(window.location.hostname == "192.168.178.23"){
