@@ -1,5 +1,5 @@
 var websocket;
-var url = "192.168.178.23:8887";
+var url = "localhost:8887";
 
 function write(packet){
 	var b = packet.parseToOutput();

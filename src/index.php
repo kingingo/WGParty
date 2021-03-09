@@ -33,13 +33,18 @@
 		if(window.location.hostname == "localhost"){
 			uuid = "138cbd2a-8db2-4a28-bdbd-03df5d64851a";
 		} else if(window.location.hostname == "127.0.0.1"){
-			uuid = "7bfef58b-ebda-4e83-845d-80fea4cadb0e";
+			uuid = "ffbef80f-ad3e-49f2-95cd-e8fbae633473";
 		} else if(window.location.hostname == "192.168.178.23"){
 			uuid = "697615a1-f64c-4e97-beb0-c458ac531045";
-		}else console.log("HOST:"+window.location.hostname);
+		}else{
+			console.log("HOST not found => "+window.location.hostname);
+		}
+			
 
-		setCookie("SID",uuid,7);
-		write(new HandshakePacket(uuid,2));
+		if(uuid!=null){
+			setCookie("SID",uuid,7);
+			write(new HandshakePacket(uuid,2));
+		}
 	});
 	</script>
 	
