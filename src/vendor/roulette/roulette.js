@@ -47,6 +47,7 @@
 			p.topPosition = defaultProperty.topPosition;
 
 			clearTimeout(p.slowDownTimer);
+			p.stopCallback(p.$rouletteTarget.find('img').eq(p.stopImageNumber),options);
 		}
 
 		var slowDownSetup = function() {
@@ -83,7 +84,6 @@
 			if (p.maxDistance && p.distance >= p.maxDistance) {
 				p.isStop = true;
 				reset();
-				p.stopCallback(p.$rouletteTarget.find('img').eq(p.stopImageNumber),options);
 				return;
 			}
 			p.distance += speed_;
@@ -173,6 +173,7 @@
 			start : start,
 			stop : stop,
 			init : init,
+			reset : reset,
 			option : option
 		}
 		return ret;

@@ -28,10 +28,23 @@
 		}
 	}
 	
+	function hideRoulette(){
+		var p = $('#p1');
+		var p_r = $('#p1_roulette');
+		p.show();
+		p_r.hide();
+		
+		var p2 = $('#p2');
+		var p2_r = $('#p2_roulette');
+		p2.show();
+		p2_r.hide();
+	}
+	
 	function stopCallbackProfile(src, id){
 		var p = $('#'+id);
 		var p_r = $('#'+id+'_roulette');
 		p.show();
 		p_r.hide();
 		p.css('background-image','url('+src+')');
+		console.log("CALL stopCallbackProfile src:"+src+" id:"+id);
 	}

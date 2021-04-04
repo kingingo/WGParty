@@ -13,6 +13,7 @@ includeProfile();
 ?>
 <script src="games/higherlower/higherlower.js" type="text/javascript"></script>
 <script src="games/pingpong/pingpong.js" type="text/javascript"></script>
+<script src="games/ladder/ladder.js" type="text/javascript"></script>
 </head>
 
 <body class="text-center">
@@ -126,6 +127,11 @@ includeProfile();
 				connect(5000,cookieCheck,function(packetId, buffer){
 					switch(packetId){
 					case READY:
+						if(this.p1_r != undefined)
+							this.p1_r.roulette('reset');
+						if(this.p2_r != undefined)
+							this.p2_r.roulette('reset');
+						
 						$("#left-stage0").css("background-color","red");
 						$("#right-stage0").css("background-color","blue");
 						var func = function(id){
@@ -153,24 +159,51 @@ includeProfile();
 						$("#right-mini-profile").attr("src","/images/profiles/resize/"+getUUID2()+".jpg");
 						
 						toggle('stage0');
-						  break;
+						break;
+					case TOGGLESTAGE:
+						var packet = new ToggleStagePacket();
+						packet.parseFromInput(buffer);
+						console.log("RECEIVED TogglePacket "+packet.stage);
+						toggle(packet.stage);
+						break;
 					case PLAYERREADYACK:
 						var packet = new PlayerReadyAckPacket();
 						packet.parseFromInput(buffer);
 						console.log("RECEIVED PlayerReadyAckPacket");
 
-						if(packet.uuid != getUUID()){
+						if(packet.uuid != getUUID() || packet.force){
 							console.log("ENTERED PlayerReadyAckPacket");
 							if(packet.uuid == getUUID1()){
 								$("#left-stage0").css("background-color","green");
+
+								if(packet.force && getUUID1() == getUUID()){
+									$("#left-ready").prop('disabled', true);
+								}
 							}else if(packet.uuid == getUUID2()){
 								$("#right-stage0").css("background-color","green");
+
+								if(packet.force && getUUID2() == getUUID()){
+									$("#right-ready").prop('disabled', true);
+								}
 							}else{
 								console.log("PLAYERREADYACK uuid "+packet.uuid+" id passt nicht");
 								console.log(getStackTrace().join('\n'));
 							}
 						}
 						 break;
+					case SETMATCH:
+						var packet = new SetMatchPacket();
+						packet.parseFromInput(buffer);
+
+						localStorage.setItem('p1_uuid',packet.u1_uuid);
+						localStorage.setItem('p1_name',packet.u1_name);
+						
+						localStorage.setItem('p2_uuid',packet.u2_uuid);
+						localStorage.setItem('p2_name',packet.u2_name);
+
+						stopCallbackProfile(packet.u1_src,"p1", true);
+						stopCallbackProfile(packet.u2_src,"p2", true);
+						break;
 					case STARTMATCH:
 						var packet = new StartMatchPacket();
 						packet.parseFromInput(buffer);
@@ -182,15 +215,17 @@ includeProfile();
 						localStorage.setItem('p2_name',packet.u2_name);
 
 						
-						var p1_r = $('#p1_roulette');
-						p1_r.empty();
+						this.p1_r = $('#p1_roulette');
+						if(this.p1_r.data('plugin_roulette'))
+							this.p1_r.roulette('remove');
+						this.p1_r.empty();
 						for(var i = 0; i < packet.loaded.length; i++)
-							p1_r.append(packet.loaded[i]);
+							this.p1_r.append(packet.loaded[i]);
 						
-						p1_r.roulette({
+						this.p1_r.roulette({
 							id: "p1",
 							speed : 10,
-							duration : packet.roulette ? rand(3,5) : 1,
+							duration : packet.roulette ? packet.roulette_duration : 0,
 							stopImageNumber : packet.u1_index,
 							startCallback : function(options) {
 								startCallbackProfile(options.id);
@@ -204,18 +239,20 @@ includeProfile();
 							}
 						});
 						
-						var p2_r = $('#p2_roulette');
-						p2_r.empty();
+						this.p2_r = $('#p2_roulette');
+						if(this.p2_r.data('plugin_roulette'))
+							this.p2_r.roulette('remove');
+						this.p2_r.empty();
 						let img;
 						for(var i = 0; i < packet.loaded.length; i++){
 							img = new Image();
 							img.src = packet.loaded[i].src;
-							p2_r.append(img);
+							this.p2_r.append(img);
 						}
-						p2_r.roulette({
+						this.p2_r.roulette({
 							id: "p2",
 							speed : 10,
-							duration :  packet.roulette ? rand(3,5) : 1,
+							duration :  packet.roulette ? packet.roulette_duration : 0,
 							stopImageNumber : packet.u2_index,
 							startCallback : function(options) {
 								startCallbackProfile(options.id);
@@ -236,14 +273,14 @@ includeProfile();
 
 						if(packet.roulette){
 							setTimeout(function(){
-								p1_r.roulette('start');
+								this.p1_r.roulette('start');
 							},3000);
 							setTimeout(function(){
-								p2_r.roulette('start');
+								this.p2_r.roulette('start');
 							},1500);
 						}else{
-							p1_r.roulette('start');
-							p2_r.roulette('start');
+							this.p1_r.roulette('start');
+							this.p2_r.roulette('start');
 						}
 						
 						break;
@@ -256,7 +293,12 @@ includeProfile();
 					case MATCH:
 						var packet = new MatchPacket();
 						packet.parseFromInput(buffer);
-						this.game.end();
+
+						if(typeof this.game !== "undefined"){
+							this.game.end();
+						}
+						
+						hideRoulette();
 						//UNENTSCHIEDEN!!!!
 						if(packet.drawn){
 							console.log("Unentschieden: "+packet.winner+"(=="+localStorage.getItem('p1_name')+") "+packet.loser);
@@ -289,10 +331,6 @@ includeProfile();
 						startCountdown(packet.time);
 						setCountdownTitle(packet.text);
 						debug("Set Countdown to "+packet.time+" text:"+packet.text+" time_limit: "+time_limit+" secs");
-						if(packet.text.toUpperCase() == 'next game in'.toUpperCase()){
-							toggle("table");
-							toggle('dashboard');
-						}
 						break;
 					case HANDSHAKEACK:
 						var packet = new HandshakeAckPacket(); 
@@ -327,8 +365,29 @@ includeProfile();
 						console.log("SPECTATE: "+spectate);
 
 						switch(packet.game){
+						case "ladder":
+							this.game = new Ladder(spectate,
+								function(){
+    					    		var packet = new GameStartAckPacket();
+    					    		write(packet);
+    					    		console.log("write GameStartAckPacket to Server");
+								},
+								function(){
+									console.log('stop ladder');
+									var packet = new GameEndPacket();
+									write(packet);
+									
+									toggle("stage1");
+								}
+							);
+							break;
 						case "higherlower":
 							this.game = new HigherLower(spectate,
+								function(){
+    					    		var packet = new GameStartAckPacket();
+    					    		write(packet);
+    					    		console.log("write GameStartAckPacket to Server");
+								},
 								function(){
 									console.log('stop higherlower');
 									var packet = new GameEndPacket();
@@ -340,6 +399,11 @@ includeProfile();
 							break;
 						case "pingpong":
 							this.game = new PingPong(spectate,
+								function(){
+    					    		var packet = new GameStartAckPacket();
+    					    		write(packet);
+    					    		console.log("write GameStartAckPacket to Server");
+								},
 								function(){
 									console.log('stop PingPong');
 									var packet = new GameEndPacket();

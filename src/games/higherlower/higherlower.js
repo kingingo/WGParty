@@ -2,7 +2,7 @@ loadScript("games/higherlower/packets.js");
 
 class HigherLower extends Game{
 	
-	constructor(spectate, callbackEnd){
+	constructor(spectate,callbackStart, callbackEnd){
 		super("HigherLower",spectate, callbackStart,callbackEnd);
 	}
 	
@@ -144,6 +144,7 @@ class HigherLower extends Game{
 	            $("#"+containerId).append(data);
 	            document.getElementById('hl_spec_1').innerHTML = localStorage.getItem('p1_name');
 	            document.getElementById('hl_spec_2').innerHTML = localStorage.getItem('p2_name');
+	    		tthis.callbackStart();
 			}.bind(null,this));
 		}else{
 			$.get("games/higherlower/index.php", function (tthis, data) {
@@ -165,12 +166,8 @@ class HigherLower extends Game{
 	    		else tthis.log('lower null');
 	    		
 	    		tthis.vs = document.getElementById('hl-vs');
-	    		
+
 	    		tthis.callbackStart();
-	    		
-	    		var packet = new GameStartAckPacket();
-	    		write(packet);
-	    		tthis.log("write GameStartAckPacket to Server");
 	        }.bind(null,this));
 		}
 	}

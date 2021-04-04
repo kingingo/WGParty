@@ -100,6 +100,8 @@ class PingPong extends Game{
 				}
 				console.log("SET USER : "+tthis.user.uuid);
 			}
+
+			tthis.callbackStart();
 		}.bind(null,this));
 	}
 	
@@ -123,6 +125,16 @@ class PingPong extends Game{
 						  this.user1.y = packet.y;
 					  }else this.log("PingPongUserPacket | uuid: "+packet.uuid+" != "+this.user2.uuid);
 				  }
+				  break;
+			  case PINGPONGGOAL:
+				  var packet = new PingPongGoalPacket();
+					packet.parseFromInput(buffer);
+					
+					if(this.user1.uuid == packet.uuid){
+						this.user1.score = packet.score;
+					}else if(this.user2.uuid == packet.uuid){
+						this.user2.score = packet.score;
+					}
 				  break;
 			  default:
 				  this.log("Packet "+packetId+" not found");
@@ -173,7 +185,7 @@ class PingPong extends Game{
 
 	//cancels touch events & move user1
 	touchMoveHandler(tthis, e){
-		event.preventDefault();
+		e.preventDefault();
 		var pos = tthis.getTouchPos(e);
 		
 		if(pos.y >= 0 && (pos.y < tthis.canvas.height - tthis.user.height)){

@@ -1,5 +1,5 @@
 var websocket;
-var url = "localhost:8887";
+var url = "192.168.178.110:8887";
 
 function write(packet){
 	var b = packet.parseToOutput();
@@ -70,10 +70,20 @@ function connect(timeout = 2000,onopen, onmessage){
   	    		  window[list[i].packet]=list[i].id;
   	    		  debug(list[i].packet+" set id to "+ window[list[i].packet]);
   	    	  }
+  	    	  window['LIST_IDS'] = list;
   	    	  onopen();
   	      }else if(packetId==PING){
   	    	  write(new PongPacket());
   	      }else{
+  	    	  
+  	    	  for(var i = 0; i < window.LIST_IDS.length; i++){
+  	    		  if(window.LIST_IDS[i].id == packetId){
+  	    			  debug("REC PACKET:"+window.LIST_IDS[i].packet+" packetId:"+packetId);
+  	    			  break;
+  	    		  }
+  	    	  }
+  	    	  
+  	    	  
   		      onmessage(packetId, buffer);  
   	      }
   	  };
@@ -108,15 +118,22 @@ function debug(msg){
 }
 
 class Game{
-	constructor(game,spectate, callbackEnd){
+	constructor(game,spectate, callbackStart, callbackEnd){
 		this.active=false;
 		this.game=game;
 		this.spectate=spectate;
 		this.callbackEnd = callbackEnd;
+		this.callbackStart = callbackStart;
+		this.cancelCallbackEnd = false;
+	}
+	
+	cancel(){
+		this.cancelCallbackEnd=true;
 	}
 	
 	end(){
-		this.callbackEnd();
+		if(!this.cancelCallbackEnd)
+			this.callbackEnd();
 		this.active=false;
 	}
 	

@@ -119,6 +119,11 @@ function getUUID(){
 }
 
 var cookieCheck=function(){
+	if(typeof this.game !== 'undefined'){
+		this.game.cancel();
+		this.game.end();
+	}
+	
 	if(checkCookie("SID")){
 		var uuid = getCookie("SID");
 		debug("Cookie found UUID -> "+uuid);

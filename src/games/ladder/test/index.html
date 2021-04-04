@@ -1,0 +1,42 @@
+
+<html>
+<head>
+  <title>Ladder</title>
+</head>
+
+<body>
+  <img src="../img/button.png" hidden id="button">
+  <img src="../img/button_pressed.png" hidden id="button_pressed">
+  <script>
+  	var array = [{path: "blue", id: "b"},{path: "red", id: "r"},{path: "yellow", id: "y"}];
+	var body = document.getElementsByTagName("body")[0];
+  	
+  	array.forEach(element => {
+  		for(var i = 0; i < 15; i++){
+  			let img = document.createElement("img");
+  			img.src="../img/"+element['path']+"/"+i+".png";
+  			img.id=(i+1)+element['id'];
+  			img.hidden=true;
+  			body.appendChild(img);
+  		}
+  	});
+  </script>
+  
+  <canvas id="blue_ladder" width="350" height="700"></canvas>
+  <canvas id="red_ladder" width="350" height="700"></canvas>
+  <script type="text/javascript" src="ladder.js"></script>
+  <script>
+  	window.onload = function(){
+  		window.game = new Ladder(false,
+  				function(){
+  					console.log("Game start");
+  				},
+  				function(){
+  					console.log('Game end');
+  				});
+  		  	
+  		window.game.init();
+  	};
+  </script>
+</body>
+</html>

@@ -23,10 +23,11 @@ class GameStartPacket {
 class PlayerReadyAckPacket {
 	parseFromInput(buffer){
 		this.uuid = buffer.readString();
+		this.force = buffer.readBoolean();
 	}
 	
 	toString(){
-		return "Uuid:"+(typeof this.uuid == "undefined" ? "undefined" : this.uuid);
+		return "Uuid:"+(typeof this.uuid == "undefined" ? "undefined" : this.uuid)+" Force:"+(typeof this.force == "undefined" ? "undefined" : this.force);
 	}
 }
 
@@ -92,6 +93,16 @@ class PingPacket {
 	}
 }
 
+class ToggleStagePacket {
+	parseFromInput(buffer){
+		this.stage = buffer.readString();
+	}
+	
+	toString(){
+		return "stage:"+(typeof this.stage == "undefined" ? "undefined" : this.stage);
+	}
+}
+
 class RegisterAckPacket {
 	parseFromInput(buffer){
 		this.uuid = buffer.readString();
@@ -102,9 +113,27 @@ class RegisterAckPacket {
 	}
 }
 
+class SetMatchPacket {
+	
+	parseFromInput(buffer){
+		this.u1_name=buffer.readString();
+		this.u1_uuid=buffer.readString();
+		this.u1_src='images/profiles/resize/'+this.u1_uuid+'.jpg';
+		
+		this.u2_name=buffer.readString();
+		this.u2_uuid=buffer.readString();
+		this.u2_src='images/profiles/resize/'+this.u2_uuid+'.jpg';
+	}
+	
+	toString(){
+		return "U1:"+this.u1+"("+this.u1_uuid+") U2:"+this.u2+"("+this.u2_uuid+")";
+	}
+}
+
 class StartMatchPacket {
 	
 	parseFromInput(buffer){
+		this.roulette_duration = buffer.readInt();
 		this.roulette = buffer.readBoolean();
 		this.u1_index = buffer.readInt();
 		this.u2_index = buffer.readInt();
