@@ -135,6 +135,7 @@ class Game{
 		if(!this.cancelCallbackEnd)
 			this.callbackEnd();
 		this.active=false;
+		$('#'+this.containerId).html("");
 	}
 	
 	start(containerId){

@@ -5,6 +5,10 @@ const blue_canvas_id = "blue_ladder";
 const color_blue = "b";
 const color_red = "r";
 
+const FASTEST = 1;
+const FAST = 2;
+const NORMAL = 4;
+
 class Ladder extends Game{
 	constructor(spectate, callbackStart, callbackEnd){
 		super("Ladder",spectate, callbackStart,callbackEnd);
@@ -16,7 +20,7 @@ class Ladder extends Game{
 		
 		$.get("games/ladder/index.php", function (tthis, data) {
             $("#"+containerId).append(data);
-            
+            tthis.speed=NORMAL;
             var blue_canvas = document.getElementById(blue_canvas_id);
     		var ctx_blue = blue_canvas.getContext("2d");
     		ctx_blue.font = "40pt Calibri";
@@ -26,6 +30,7 @@ class Ladder extends Game{
     				range : 1,
     				up: true,
     				tries : 15,
+    				speed: NORMAL,
     				
     				can : blue_canvas, 
     				ctx: ctx_blue, 
@@ -48,6 +53,7 @@ class Ladder extends Game{
     				range : 1,
     				up: true,
     				tries : 15,
+    				speed: NORMAL,
     				
     				can : red_canvas, 
     				ctx: ctx_red, 
@@ -96,7 +102,7 @@ class Ladder extends Game{
 	  }else{
 		  this.user=null;
 	  }
-	  this.interval = setInterval(this.update.bind(null,this), 1000 / 5 );
+	  this.interval = setInterval(this.update.bind(null,this), 1000 / 15 );
 	}
 	
 	touchHandler(tthis, color, ev){
@@ -131,6 +137,7 @@ class Ladder extends Game{
 				color.start -=1;
 			
 			color.range = (color.up && (color.start % 6) == 0 ? 5 : 1);
+			color.speed = (color.up && (color.start % 6) == 0 ? FAST : NORMAL);
 			
 			write(new LadderClickPacket(color.uuid, color.pos, color.start,color.range, color.up, color.tries));
 			tthis.drawButton(color,true);
@@ -139,16 +146,21 @@ class Ladder extends Game{
 	}
 	
 	update(tthis){
+		if(tthis.speed==FASTEST){
+			tthis.speed = NORMAL;
+		}else 
+			tthis.speed-=1;
+		
 		tthis.updateColor(tthis.blue);
 		tthis.updateColor(tthis.red);
 	}
 	
 	updateColor(c){
-		if(c.pos == -1 || c.tries == 0)return;
+		if(c.speed > this.speed || c.pos == -1 || c.tries == 0)return;
 		
 		if(c.up && (c.pos == (c.start+c.range) || c.pos == 15)){
 			c.up = !c.up;
-		}else if(!c.up && (((c.pos-1)%6)==0 || c.pos == c.start || c.pos == 1)){
+		}else if(!c.up && (c.pos == c.start || c.pos == 1)){
 			c.up = !c.up;
 		}
 		
@@ -176,6 +188,7 @@ class Ladder extends Game{
 	}
 	
 	drawLadder(color){
+		color.ctx.clearRect(0, 0, color.can.width, color.can.height);
 		let x = 0;
 		let width = 0;
 		let y = 0;
@@ -202,10 +215,10 @@ class Ladder extends Game{
 		clearInterval(this.interval);
 		
 		if(getUUID() == this.blue.uuid){
-			this.blue.can.removeEventListener('touchmove', this.touchMoveHandler);
+			this.blue.can.removeEventListener('touchmove', this.touchHandler);
 			this.blue.can.removeEventListener('click', this.touchHandler);
 		}else if(getUUID() == this.red.uuid){
-			this.red.can.removeEventListener('touchmove', this.touchMoveHandler);
+			this.red.can.removeEventListener('touchmove', this.touchHandler);
 			this.red.can.removeEventListener('click', this.touchHandler);
 		}
 	}

@@ -128,7 +128,6 @@ class HigherLower extends Game{
 	
 	end(){
 		super.end();
-		$('#'+this.containerId).html("");
 	}
 	
 	numberWithCommas(x) {

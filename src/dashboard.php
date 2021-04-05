@@ -14,6 +14,7 @@ includeProfile();
 <script src="games/higherlower/higherlower.js" type="text/javascript"></script>
 <script src="games/pingpong/pingpong.js" type="text/javascript"></script>
 <script src="games/ladder/ladder.js" type="text/javascript"></script>
+<script src="games/blackorred/blackORred.js" type="text/javascript"></script>
 </head>
 
 <body class="text-center">
@@ -365,6 +366,22 @@ includeProfile();
 						console.log("SPECTATE: "+spectate);
 
 						switch(packet.game){
+						case "blackorred":
+							this.game = new BlackOrRed(spectate,
+								function(){
+    					    		var packet = new GameStartAckPacket();
+    					    		write(packet);
+    					    		console.log("write GameStartAckPacket to Server");
+								},
+								function(){
+									console.log('stop BlackOrRed');
+									var packet = new GameEndPacket();
+									write(packet);
+									
+									toggle("stage1");
+								}
+							);
+							break;
 						case "ladder":
 							this.game = new Ladder(spectate,
 								function(){

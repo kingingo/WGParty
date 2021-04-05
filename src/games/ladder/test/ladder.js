@@ -33,19 +33,24 @@ const blue_canvas_id = "blue_ladder";
 const color_blue = "b";
 const color_red = "r";
 
+const FASTEST = 1;
+const FAST = 2;
+const NORMAL = 4;
+
 class Ladder extends Game{
 	constructor(spectate, callbackStart, callbackEnd){
 		super("Ladder",spectate, callbackStart,callbackEnd);
-		
+		this.speed = NORMAL;
 		var blue_canvas = document.getElementById(blue_canvas_id);
 		var ctx_blue = blue_canvas.getContext("2d");
 		ctx_blue.font = "40pt Calibri";
 		this.blue = {
-				start : 1,
-				pos : 1,
+				start : 11,
+				pos : 11,
 				range : 1,
 				up: true,
-				tries : 5,
+				tries : 15,
+				speed : NORMAL,
 				
 				can : blue_canvas, 
 				ctx: ctx_blue, 
@@ -66,7 +71,8 @@ class Ladder extends Game{
 				pos : 1,
 				range : 1,
 				up: true,
-				tries : 5,
+				tries : 15,
+				speed : NORMAL,
 				
 				can : red_canvas, 
 				ctx: ctx_red, 
@@ -101,7 +107,7 @@ class Ladder extends Game{
 //	  }else{
 //		  this.user=null;
 //	  }
-	  this.interval = setInterval(this.update.bind(null,this), 1000 / 5 );
+	  this.interval = setInterval(this.update.bind(null,this), 1000 / 15 );
 	}
 	
 	touchHandler(tthis, color, ev){
@@ -114,7 +120,7 @@ class Ladder extends Game{
 		var b_y = color.by;
 		var b_h = color.bheight;
 		
-		if(!color.bpressed && b_x < pos.x && (b_x+b_w) > pos.x && b_y < pos.y && (b_y+b_h) > pos.y){
+		if(!color.bpressed && color.pos != -1 && color.tries > 0 && b_x < pos.x && (b_x+b_w) > pos.x && b_y < pos.y && (b_y+b_h) > pos.y){
 			if(color.pos == 15){
 				console.log("-1");
 				color.pos = -1;
@@ -123,6 +129,10 @@ class Ladder extends Game{
 				console.log("-"+(color.start!=1 ? 1 : 0));
 				color.start -= (color.start!=1 ? 1 : 0);
 				color.tries-=1;
+				
+				if(color.tries == 0){
+					tthis.drawLadder(color);
+				}
 			}else{
 				console.log("SET "+color.pos);
 				color.start = color.pos;
@@ -132,19 +142,27 @@ class Ladder extends Game{
 				color.start -=1;
 			
 			color.range = (color.up && (color.start % 6) == 0 ? 5 : 1);
+			color.speed = (color.up && (color.start % 6) == 0 ? FAST : NORMAL);
 			
 			tthis.drawButton(color,true);
-			setTimeout(function(){ tthis.drawButton(color,false); }, 250);
+			setTimeout(function(){ tthis.drawButton(color,false); }, 150);
 		}
 	}
 	
 	update(tthis){
+		if(tthis.speed==FASTEST){
+			tthis.speed = NORMAL;
+		}else 
+			tthis.speed-=1;
+		
 		tthis.updateColor(tthis.blue);
 		tthis.updateColor(tthis.red);
 	}
 	
 	updateColor(c){
-		if(c.pos == -1)return;
+		if(c.speed > this.speed)return;
+		
+		if(c.pos == -1 || c.tries == 0)return;
 		
 		if(c.up && (c.pos == (c.start+c.range) || c.pos == 15)){
 			c.up = !c.up;
@@ -195,14 +213,6 @@ class Ladder extends Game{
 		color.bwidth = button.width;
 		color.bheight = button.height;
 		color.ctx.drawImage(button, color.bx, color.by, color.bwidth, color.bheight);
-	}
-	
-	end(){
-		super.end();
-	}
-	
-	start(containerId){
-		super.start(containerId);
 	}
 	
 	onmessage(packetId, buffer){
