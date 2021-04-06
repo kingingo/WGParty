@@ -45,8 +45,8 @@ class Ladder extends Game{
 		var ctx_blue = blue_canvas.getContext("2d");
 		ctx_blue.font = "40pt Calibri";
 		this.blue = {
-				start : 11,
-				pos : 11,
+				start : 1,
+				pos : 1,
 				range : 1,
 				up: true,
 				tries : 15,
