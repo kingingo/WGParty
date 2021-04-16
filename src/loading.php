@@ -1,7 +1,6 @@
 <div id="loading" class="load_center">
 	<h1 id="loading_msg">Loading...</h1>
-	<img alt="load image" style="height: 256px; width: 256px;" class="load"
-		src="images/load.png">
+	<img alt="load image" style="height: 256px; width: 256px;" class="load" src="images/load.png">
 </div>
 
 <script>

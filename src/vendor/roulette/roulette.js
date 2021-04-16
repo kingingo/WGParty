@@ -108,7 +108,7 @@
 				p.$images = $roulette.find('img').remove();
 				p.imageCount = p.$images.length;
 				p.$images.eq(0).bind('load',function(){
-					p.imageHeight = 256;
+					p.imageHeight = window.mobile ? 128 : 256;
 					p.totalHeight = p.imageCount * p.imageHeight;
 					p.runUpDistance = 2 * p.imageHeight;
 				}).each(function(){

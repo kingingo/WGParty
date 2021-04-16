@@ -112,14 +112,14 @@ class BlackOrRed extends Game{
 			{
 				name:localStorage.getItem('p1_name'),
 				uuid:getUUID1(),
-				path:"/images/profiles/resize/"+getUUID1()+".jpg", 
+				path:getProfile(getUUID1()),
 				x:this.canvas.width - this.canvas.width/10,
 				choose:[0,0,0],
 			},
 			{
 				name:localStorage.getItem('p2_name'),
 				uuid:getUUID2(),
-				path:"/images/profiles/resize/"+getUUID2()+".jpg", 
+				path:getProfile(getUUID2()),
 				x:this.canvas.width - this.canvas.width/5 + 25,
 				choose:[0,0,0],
 			},

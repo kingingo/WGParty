@@ -34,7 +34,7 @@ class PlayerReadyAckPacket {
 class HandshakeAckPacket {
 	
 	parseFromInput(buffer){
-		this.accepted = (buffer.readInt()==0?false:true);
+		this.accepted = buffer.readBoolean();
 		if(this.accepted){
 			this.name = buffer.readString();
 			this.inGame = buffer.readBoolean();
@@ -118,11 +118,11 @@ class SetMatchPacket {
 	parseFromInput(buffer){
 		this.u1_name=buffer.readString();
 		this.u1_uuid=buffer.readString();
-		this.u1_src='images/profiles/resize/'+this.u1_uuid+'.jpg';
+		this.u1_src=getProfile(this.u1_uuid);
 		
 		this.u2_name=buffer.readString();
 		this.u2_uuid=buffer.readString();
-		this.u2_src='images/profiles/resize/'+this.u2_uuid+'.jpg';
+		this.u2_src=getProfile(this.u2_uuid);
 	}
 	
 	toString(){
@@ -145,7 +145,7 @@ class StartMatchPacket {
 		for(var i = 0; i < size; i++){
 			let uuid = buffer.readString();
 			var img = new Image();
-			img.src='images/profiles/resize/'+uuid+'.jpg';
+			img.src=getProfile(uuid);
 			this.loaded.push(img);
 			
 			if(i == this.u1_index){
@@ -168,9 +168,12 @@ class StatsAckPacket {
 		this.list = [];
 		
 		for(var i = 0; i < length; i++){
-			this.list.push({name:buffer.readString()
-				, uuid:buffer.readString()
-				, stats: this.parseFromInputStats(buffer)});
+			this.list.push({
+				name:buffer.readString(),
+				uuid:buffer.readString(),
+				spectate: buffer.readBoolean(),
+				stats: this.parseFromInputStats(buffer)
+			});
 		}
 	}
 	

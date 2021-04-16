@@ -92,6 +92,21 @@ class PlayerReadyPacket {
 	}
 }
 
+class SpectatePacket{
+	
+	constructor(spectate){
+		this.spectate=spectate;
+		this.id=SPECTATE;
+	}
+	
+	parseToOutput(){
+		this.buffer = new dcodeIO.ByteBuffer(1,false,false);
+		this.buffer.writeBoolean(this.spectate);
+		return this.buffer;
+	}
+	
+}
+
 class StatsPacket{
 	
 	constructor(update){
@@ -101,7 +116,7 @@ class StatsPacket{
 	
 	parseToOutput(){
 		this.buffer = new dcodeIO.ByteBuffer(1,false,false);
-		this.buffer.writeInt((this.update ? 1 : 0));
+		this.buffer.writeBoolean(this.update);
 		return this.buffer;
 	}
 	

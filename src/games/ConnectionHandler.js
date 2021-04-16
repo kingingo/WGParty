@@ -1,5 +1,6 @@
 var websocket;
-var url = "192.168.178.110:8887";
+var url = "192.168.178.110";
+var server_ip = "192.168.178.110:8887";
 
 function write(packet){
 	var b = packet.parseToOutput();
@@ -22,8 +23,8 @@ function write(packet){
 
 function connect(timeout = 2000,onopen, onmessage){
 	new Promise(function(resolve, reject) {
-		debug("try to connect to "+url+"... (timeout:"+timeout+")");
-		const socket = new WebSocket("ws://"+url);
+		debug("try to connect to "+server_ip+"... (timeout:"+timeout+")");
+		const socket = new WebSocket("ws://"+server_ip);
 			
 	      const timer = setTimeout(function() {
 	          done();

@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>WG PARTY - ANMELDUNG</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="vendor/css/signin.css" rel="stylesheet">
 <?php 
     include_once 'vendor/utils.php';

@@ -22,6 +22,8 @@ class Ladder extends Game{
             $("#"+containerId).append(data);
             tthis.speed=NORMAL;
             var blue_canvas = document.getElementById(blue_canvas_id);
+            blue_canvas.width = window.mobile ? 175 : 350;
+            blue_canvas.height = window.mobile ? 350 : 700;
     		var ctx_blue = blue_canvas.getContext("2d");
     		ctx_blue.font = "40pt Calibri";
     		tthis.blue = {

@@ -1,8 +1,54 @@
+@media only screen and (max-width: 545px) {
+	
+	.profile {
+		background-size: 128px 128px;
+		height: 128px;
+		width: 128px;
+	}
+	
+	.vs {
+		height: 50px;
+	}
+	
+	.krone {
+		background-size: 64px 64px;
+		height: 64px;
+		width: 64px;
+	}
+	
+	.loser {
+		background-size: 128px 128px;
+		height: 128px;
+		width: 128px;
+	}
+}
+
+
+@media only screen and (min-width: 545px) {
+
+	.profile {
+		background-size: 256px 256px;
+		height: 256px;
+		width: 256px;
+	}
+	
+	.vs {
+		height: 100px;
+	}
+	
+	.krone {
+		height: 128px;
+		width: 128px;
+	}
+	
+	.loser {
+		height: 256px;
+		width: 256px;
+	}
+}
+
 .profile {
 	background-image: url(../../images/unknown.png);
-	background-size: 256px 256px;
-	height: 256px;
-	width: 256px;
 	border: 1px solid;
 	float: left;
 	text-align: left;
@@ -26,25 +72,20 @@
 
 .krone {
 	position: relative;
-	height: 128px;
-	width: 128px;
 	top: -25%;
 	left: -25%;
+	transform: rotate(-35deg);
+}
+
+.loser {
+	position: absolute;
+	opacity: 0.6;
 	transform: rotate(-35deg);
 }
 
 .vs {
 	position: relative;
 	float: left;
-	height: 100px;
 	width: auto;
 	margin: 20px;
-}
-
-.loser {
-	position: absolute;
-	height: 256px;
-	width: 256px;
-	opacity: 0.6;
-	transform: rotate(-35deg);
 }

@@ -1,0 +1,95 @@
+span{
+	color:white;
+	text-shadow: -1px 0 #191414, 0 1px #191414, 1px 0 #191414, 0 -1px #191414;
+}
+
+body {
+    background-color: #191414;
+}
+
+.load_center{
+  	margin-left: auto;
+  	margin-right: auto;
+  	
+  	display: -ms-flexbox;
+	display: block;
+	padding-top: 40px;
+	padding-bottom: 40px;
+}
+
+.load {
+	-webkit-animation: spin1 2s infinite linear;
+	-moz-animation: spin1 2s infinite linear;
+	-o-animation: spin1 2s infinite linear;
+	-ms-animation: spin1 2s infinite linear;
+	animation: spin1 2s infinite linear;
+}
+
+#loading_msg{
+	color: white;
+	text-shadow: -1px 0 #191414, 0 1px #191414, 1px 0 #191414, 0 -1px #191414;
+}
+
+button {
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: 1px solid #1DB954;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+    color:white;
+}
+
+#background {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 50%;
+    height: 100%;
+    background-color: #1DB954;
+    z-index: 1;
+}
+
+.box {
+    position: relative;
+    z-index: 2;
+    padding: 30px;
+    text-align: center;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+}
+
+.center{
+  margin: auto;
+  width: 30%;
+  padding: 10px;
+}
+
+.in{
+    text-align: center;
+}
+
+#logo{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+    margin-top: 4%;
+}
+
+select option{
+  color: #1DB954;
+  background-color: #191414;
+}
+
+select {
+  /* ... */
+  width: 40%;
+  height: 40px;
+  -moz-padding-start: calc(10px - 3px);
+  padding-left: 10px;
+  background: url(fff-0-2.png) repeat;
+  color: #fff;
+	text-shadow: -1px 0 #191414, 0 1px #191414, 1px 0 #191414, 0 -1px #191414;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+}

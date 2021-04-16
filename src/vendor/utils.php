@@ -87,6 +87,10 @@ function includePath($path){
 
 <script>
 
+function getProfile(uuid){
+	return "/images/profiles/resize/"+uuid+"_"+window.profile_size+".jpg";
+}
+
 function getName2(){
 	return localStorage.getItem('p2_name');
 }
@@ -133,6 +137,7 @@ var cookieCheck=function(){
 			write(new HandshakePacket(uuid,3));
 // 		}, 1000*5);
 	}else{
+		removeCookie("SID");
 		window.location = "http://"+url+"/";
 	}
 }

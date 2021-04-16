@@ -1,5 +1,10 @@
+<?php
+define("PATH","test");
+?>
+
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>WG PARTY - DASHBOARD</title>
 <link href="vendor/css/dashboard.css" rel="stylesheet">
 <script src="vendor/explosion/explosion.js" type="text/javascript"></script>
@@ -19,13 +24,46 @@ includeProfile();
 
 <body class="text-center">
 	<div id="content" style="display: none;">
-		<img src="" id="mini-profile" alt="Italian Trulli">
+		<img src="" class="mini-profile desktop" id="mini-profile-desktop" alt="Italian Trulli">
 
 		<div class="word" id="dashboard"></div>
 		<div class="word" id="ingame"></div>
 		<?php include 'vendor/countdown/countdown.html'; ?>
 		<hr>
-		<table class="center" id="table">
+		<div class="mobile" id="mobile">
+			<div class="container">
+              <div class="row">
+                <div class="col-6">
+                  <p>Gewonnen</p>
+        	      <p>1</p>
+        		  <p>Drinks</p>
+        		  <p>10</p>
+                </div>
+                <div class="col-6">
+                  <img src="" class="mini-profile" id="mini-profile" alt="Italian Trulli">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col" style="height:100px">
+                    <input type="checkbox" id="switch-checkbox">
+        
+                    <label id="switch" for="switch-checkbox">
+                      <div id="switch-img"></div>
+                      <div id="switch-spectate">Spectate</div>
+                      <div id="switch-play">Play</div>
+                    </label>
+                </div>
+              </div>
+              <div style="margin-bottom: 10px;" class="row">
+<!--                 <div class="col"> -->
+<!--                	<div style="background-image: url(https://i.scdn.co/image/ab67616d000048519627438b25cb1f1839613bda);width:64px;height:64px;"></div> -->
+<!--                 </div> -->
+              </div>
+              <div id="player_list" class="row"></div>
+            </div>
+		</div>
+		
+		<table class="center desktop" id="table">
 			<tr>
 				<th>Player</th>
 				<th onclick="sortTable(1)" style="cursor:pointer;">Wins</th>
@@ -84,25 +122,25 @@ includeProfile();
 					break;
 				case 'table':
 					removeWheel();
-					$('#table').show();
+					$(window.mobile ? '#mobile' : '#table').show();
 					$('#stage0').hide();
 					$('#stage1').hide();
 					$('#stage2').hide();
 					break;
 				case 'stage0':
-					$('#table').hide();
+					$(window.mobile ? '#mobile' : '#table').hide();
 					$('#stage0').show();
 					$('#stage1').hide();
 					$('#stage2').hide();
 					break;
 				case 'stage1':
-					$('#table').hide();
+					$(window.mobile ? '#mobile' : '#table').hide();
 					$('#stage0').hide();
 					$('#stage1').show();
 					$('#stage2').hide();
 					break;
 				case 'stage2':
-					$('#table').hide();
+					$(window.mobile ? '#mobile' : '#table').hide();
 					$('#stage0').hide();
 					$('#stage1').hide();
 					$('#stage2').show();
@@ -110,7 +148,27 @@ includeProfile();
 				}
 			}
 
+			function detectMob() {
+			    const toMatch = [
+			        /Android/i,
+			        /webOS/i,
+			        /iPhone/i,
+			        /iPad/i,
+			        /iPod/i,
+			        /BlackBerry/i,
+			        /Windows Phone/i
+			    ];
+
+			    return toMatch.some((toMatchItem) => {
+			        return navigator.userAgent.match(toMatchItem);
+			    });
+			}
+
 			function init(){
+				$("#switch-checkbox").on("click",function(e){
+					var packet = new SpectatePacket(!this.checked);
+					write(packet);
+				});
 				$("#ready").on("click", function(e){
 					$("#ready").hide();
 					var packet = new PlayerReadyPacket();
@@ -123,7 +181,7 @@ includeProfile();
 				toggle('table');
 			}
 			init();
-
+			
 			function initConnection(){
 				connect(5000,cookieCheck,function(packetId, buffer){
 					switch(packetId){
@@ -156,8 +214,8 @@ includeProfile();
 							$("#right-ready").prop('disabled', true);
 						}
 						
-						$("#left-mini-profile").attr("src","/images/profiles/resize/"+getUUID1()+".jpg");
-						$("#right-mini-profile").attr("src","/images/profiles/resize/"+getUUID2()+".jpg");
+						$("#left-mini-profile").attr("src",getProfile(getUUID1()));
+						$("#right-mini-profile").attr("src",getProfile(getUUID2()));
 						
 						toggle('stage0');
 						break;
@@ -314,7 +372,7 @@ includeProfile();
 								setStatus('p2',true);
 							}
 
-							initWheel(packet.alk);
+							initWheel(packet.alk, window.mobile ? 250 : 500);
 							if(packet.loser_uuid === getUUID()){
 								setTimeout(() => {
 									activateWheel();
@@ -352,6 +410,7 @@ includeProfile();
 							write(packet);
 						}else{
 							debug("Not Accepted...");
+							removeCookie("SID");
 							window.location = "http://"+url;
 						}
 						break;
@@ -441,19 +500,52 @@ includeProfile();
 						var packet = new StatsAckPacket();
 						packet.parseFromInput(buffer);
 						var list = packet.list;
-						var table = document.getElementById('table');
-						
-						for(var i = 0; i < list.length; i++){
-							var stats = list[i];
-							var el = document.getElementById(stats.uuid);
 
-							if(el==null){
-								table.appendChild(createRow(stats));
-							}else{
-// 								console.log("update "+stats.name+" to wins:"+stats.wins+" loses:"+stats.loses);
-								updateRow(stats,el);
+						if(window.mobile){
+							var row = document.getElementById("player_list");
+
+							for(var i = 0; i < list.length; i++){
+								let user = list[i];
+								if(user.uuid == getUUID()){
+									let el = document.getElementById("switch-checkbox");
+									el.checked = !user.spectate;
+								}
+
+								let col = document.getElementById("col-"+user.uuid);
+
+								if(col==null){
+									let img = document.createElement("img");
+									img.src=getProfile(user.uuid);
+									img.classList.add("mini-profile");
+									img.classList.add("other-profile");
+									
+									col = document.createElement("div");
+									col.classList.add("col");
+									col.id="col-"+user.uuid;
+									col.appendChild(img);
+									
+									row.appendChild(col);
+									col.style=user.spectate ? "display:none;" : "";
+								}else{
+									col.style=user.spectate ? "display:none;" : "";
+								}
+							}	
+						}else{
+							var table = document.getElementById('table');
+							
+							for(var i = 0; i < list.length; i++){
+								var stats = list[i];
+								
+								var el = document.getElementById(stats.uuid);
+
+								if(el==null){
+									table.appendChild(createRow(stats));
+								}else{
+//	 								console.log("update "+stats.name+" to wins:"+stats.wins+" loses:"+stats.loses);
+									updateRow(stats,el);
+								}
+								sortTable(undefined,false);
 							}
-							sortTable(undefined,false);
 						}
 						break;
 					default:
@@ -473,7 +565,9 @@ includeProfile();
 				setCountdownSize('1em');
 				setCountdownPos('static');
 				setCountdownTitle('next game in');
-				$("#mini-profile").attr("src","/images/profiles/resize/"+getUUID()+".jpg");
+				window.mobile = detectMob();
+				window.profile_size = window.mobile ? "128x128" : "256x256";
+				$("#mini-profile" + (window.mobile ? "" : "-desktop")).attr("src","/images/profiles/resize/"+getUUID()+"_"+window.profile_size+".jpg");
 				window.initConnection=initConnection;
 				initConnection();
 			});

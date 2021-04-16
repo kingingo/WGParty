@@ -1,11 +1,11 @@
 var padding, data, svg, container, vis, pie, arc, arcs;
 var init=false;
 
-	function initWheel(newData){
+	function initWheel(newData,size){
 	 		if(!init){
 	 			padding = {top:20, right:40, bottom:0, left:0},
-	            w = 500 - padding.left - padding.right,
-	            h = 500 - padding.top  - padding.bottom,
+	            w = size - padding.left - padding.right,
+	            h = size - padding.top  - padding.bottom,
 	            radius = Math.min(w, h)/2,
 	            rotation = 0,
 	            oldrotation = 0,
