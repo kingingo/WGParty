@@ -1,4 +1,21 @@
-@media only screen and (max-width: 545px) {
+/* HANDY GERADE */
+@media only screen and (max-width: 450px){
+	.stage0 .left, .stage0 .right {
+		height: 25%;
+		width: 100%;
+	}
+}
+
+/*  HANDY GEDREHT */
+@media only screen and (max-width: 900px) and (min-width: 450px){
+	.stage0 .left, .stage0 .right {
+		height: 100%;
+		width: 50%;
+	}
+}
+
+/*  HANDY GERADE & GREDREHT*/
+@media only screen and (max-width: 900px){
 	.mini-profile {
 		width: 128px;
 		height: 128px;
@@ -50,7 +67,13 @@
 	}
 }
 
-@media only screen and (min-width: 545px) {
+/* DEKSTOP */
+@media only screen and (min-width: 900px) {
+	.stage0 .left, .stage0 .right {
+		height: 50%;
+		width: 50%;
+	}
+	
 	.mini-profile {
 		width: 75px;
 		height: 75px;
@@ -91,6 +114,14 @@
 	.mobile {
 		display: none!important;
 	}
+}
+
+#stage1{
+	margin-bottom: 60px;
+}
+
+.mini-profile {
+    border-radius: 5px;
 }
 
 #switch-checkbox {
@@ -179,19 +210,10 @@ th, td {
 }
 
 .stage0 .left, .stage0 .right {
-	height: 500px;
 	position: relative;
 	background: round;
 	float: left;
-	width: 50%;
 	overflow: hidden;
 	background-size: cover;
 	text-align: center;
-}
-
-@media only screen and (max-width: 1000px) {
-	.stage0 .left, .stage0 .right {
-		height: 50%;
-		width: 100%;
-	}
 }

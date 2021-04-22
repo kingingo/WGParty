@@ -1,11 +1,11 @@
 var padding, data, svg, container, vis, pie, arc, arcs;
 var init=false;
 
-	function initWheel(newData,size){
+	function initWheel(newData){
 	 		if(!init){
 	 			padding = {top:20, right:40, bottom:0, left:0},
-	            w = size - padding.left - padding.right,
-	            h = size - padding.top  - padding.bottom,
+	            w = (window.mobile ? 250 : 500) - padding.left - padding.right,
+	            h = (window.mobile ? 250 : 500) - padding.top  - padding.bottom,
 	            radius = Math.min(w, h)/2,
 	            rotation = 0,
 	            oldrotation = 0,
@@ -72,7 +72,7 @@ var init=false;
 	        container.append("circle")
 	            .attr("cx", 0)
 	            .attr("cy", 0)
-	            .attr("r", 60)
+	            .attr("r", window.mobile ? 40 : 60)
 	            .style({"fill":"white","cursor":"pointer"});
 
 	        // spin text
@@ -81,7 +81,7 @@ var init=false;
 	            .attr("y", 15)
 	            .attr("text-anchor", "middle")
 	            .text("SPIN")
-	            .style({"font-weight":"bold", "font-size":"30px"});
+	            .style({"font-weight":"bold", "font-size": (window.mobile ? 20 : 30)+"px"});
 	 		}
 	 		init=true;
 		}

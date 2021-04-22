@@ -87,8 +87,40 @@ function includePath($path){
 
 <script>
 
+function detectMobTurned(){
+	return window.screen.width >= 450 || !window.mobile;
+}
+
+function getProfileSize(){
+	return detectMobTurned() ? "256x256" : "128x128";
+}
+
+function detectMob() {
+    const toMatch = [
+        /Android/i,
+        /webOS/i,
+        /iPhone/i,
+        /iPad/i,
+        /iPod/i,
+        /BlackBerry/i,
+        /Windows Phone/i
+    ];
+
+    return toMatch.some((toMatchItem) => {
+        return navigator.userAgent.match(toMatchItem);
+    });
+}
+
+function getProfileS(uuid,m){
+	return "/images/profiles/resize/"+uuid+"_"+(m ? "256x256" : "128x128")+".jpg";
+}
+
 function getProfile(uuid){
-	return "/images/profiles/resize/"+uuid+"_"+window.profile_size+".jpg";
+	return "/images/profiles/resize/"+uuid+"_"+getProfileSize()+".jpg";
+}
+
+function getName(){
+	return localStorage.getItem('name');
 }
 
 function getName2(){

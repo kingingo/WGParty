@@ -6,11 +6,14 @@
 		p.hide();
 		p.css('background-image','');
 		p_r.show();
-		
-		var k = $('#'+id+'_krone');
-		var l = $('#'+id+'_loser');
-		k.hide();
-		l.hide();
+		hideStatus();
+	}
+	
+	function hideStatus(){
+		$('#p1_krone').hide();
+		$('#p1_loser').hide();
+		$('#p2_krone').hide();
+		$('#p2_loser').hide();
 	}
 
 	function setStatus(id, win){

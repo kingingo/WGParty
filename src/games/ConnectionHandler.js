@@ -132,11 +132,15 @@ class Game{
 		this.cancelCallbackEnd=true;
 	}
 	
+	clear(){
+		console.log("GAME CLEAR CLEAR!!!!");
+		$('#'+this.containerId).html("");
+	}
+	
 	end(){
 		if(!this.cancelCallbackEnd)
 			this.callbackEnd();
 		this.active=false;
-		$('#'+this.containerId).html("");
 	}
 	
 	start(containerId){

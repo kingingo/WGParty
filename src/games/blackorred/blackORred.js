@@ -84,6 +84,11 @@ class BlackOrRed extends Game{
 	
 	init(){
 		this.canvas = document.getElementById(bor_canvas_id);
+		// width="900" height="600"
+		
+		this.canvas.width = 900;
+		this.canvas.height = 600;
+		
 		this.ctx = this.canvas.getContext("2d");
 		this.background = document.getElementById("background");
 		this.cover = document.getElementById("card_cover");

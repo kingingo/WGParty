@@ -128,6 +128,7 @@ includeProfile();
 					$('#stage2').hide();
 					break;
 				case 'stage0':
+					hideStatus();
 					$(window.mobile ? '#mobile' : '#table').hide();
 					$('#stage0').show();
 					$('#stage1').hide();
@@ -137,31 +138,19 @@ includeProfile();
 					$(window.mobile ? '#mobile' : '#table').hide();
 					$('#stage0').hide();
 					$('#stage1').show();
-					$('#stage2').hide();
+					if(window.game==null)
+						$('#stage2').hide();
+					else
+						$('#stage2').show();
 					break;
 				case 'stage2':
+					hideStatus();
 					$(window.mobile ? '#mobile' : '#table').hide();
 					$('#stage0').hide();
 					$('#stage1').hide();
 					$('#stage2').show();
 					break;
 				}
-			}
-
-			function detectMob() {
-			    const toMatch = [
-			        /Android/i,
-			        /webOS/i,
-			        /iPhone/i,
-			        /iPad/i,
-			        /iPod/i,
-			        /BlackBerry/i,
-			        /Windows Phone/i
-			    ];
-
-			    return toMatch.some((toMatchItem) => {
-			        return navigator.userAgent.match(toMatchItem);
-			    });
 			}
 
 			function init(){
@@ -267,6 +256,10 @@ includeProfile();
 						var packet = new StartMatchPacket();
 						packet.parseFromInput(buffer);
 
+						if(this.game!=null)
+							this.game.clear();
+						hideStatus();
+
 						localStorage.setItem('p1_uuid',packet.u1_uuid);
 						localStorage.setItem('p1_name',packet.u1_name);
 						
@@ -319,7 +312,11 @@ includeProfile();
 							slowDownCallback : function() {
 							},
 							stopCallback : function($stopElm,options) {
-								console.log('stop '+$stopElm.attr('src'));
+								let src = $stopElm.attr('src');
+								if(window.mobile)
+									src=replaceAll(src, "256x256","128x128");
+								
+								console.log('stop '+src);
 								stopCallbackProfile($stopElm.attr('src'),options.id, true);
 								$('#'+options.id+'_roulette').roulette('remove');
 							}
@@ -372,7 +369,7 @@ includeProfile();
 								setStatus('p2',true);
 							}
 
-							initWheel(packet.alk, window.mobile ? 250 : 500);
+							initWheel(packet.alk);
 							if(packet.loser_uuid === getUUID()){
 								setTimeout(() => {
 									activateWheel();
@@ -418,6 +415,9 @@ includeProfile();
 						var packet = new GameStartPacket();
 						packet.parseFromInput(buffer);
 
+						if(this.game!=null)
+							this.game.clear();
+						
 						var spectate = true;
 						if(getUUID() == getUUID1() || getUUID() == getUUID2()){
 							spectate=false;

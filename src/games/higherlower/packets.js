@@ -18,11 +18,13 @@ class HigherLowerSearchChoosePacket{
 class HigherLowerAnsweredPacket {
 	parseFromInput(buffer){
 		this.uuid = buffer.readString();
+		this.index = buffer.readInt();
 		this.right = buffer.readBoolean();
+		this.higher = buffer.readBoolean();
 	}
 	
 	toString(){
-		return "uuid:"+this.uuid+" right:"+this.right;
+		return "uuid:"+this.uuid+" right:"+this.right+" higher:"+this.higher+" index:"+this.index;
 	}
 }
 

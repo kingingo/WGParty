@@ -52,6 +52,7 @@
 	border: 1px solid;
 	float: left;
 	text-align: left;
+    border-radius: 5px;
 }
 
 .profileContainer {

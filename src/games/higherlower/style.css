@@ -1,14 +1,42 @@
-@media only screen and (max-width: 545px) {
+/* HANDY GERADE */
+@media only screen and (max-width: 450px){
 	.hl-vs {
 		top: 77.5%;
 	}
 }
 
+/*  HANDY GEDREHT */
+@media only screen and (max-width: 900px) and (min-width: 450px){
+	.hl-vs {
+		top: 110%;
+	}
+}
 
-@media only screen and (min-width: 545px) {
+
+@media only screen and (min-width: 900px) {
 	.hl-vs {
 		top: 50%;
 	}
+}
+
+#hl-higher:after{
+    display: block;
+    content: "";
+    width: var(--width);
+    height: 32px;
+    background: var(--images);
+    background-size: 32px 32px;
+    background-repeat: var(--bg-repeat);
+}
+
+#hl-lower:after{
+    display: block;
+    content: "";
+    width: var(--width);
+    height: 32px;
+    background-repeat: no-repeat;
+    background: var(--images);
+    background-size: 32px 32px;
 }
 
 .higherlower {
@@ -99,11 +127,11 @@
 	.hl-text{
 		top: 0%;
 	}
-	.vs {
-		top: 47%;
-		left: 50%;
-	}
-	.text {
-		top: 25%;
-	}
+/* 	.vs { */
+/* 		top: 47%; */
+/* 		left: 50%; */
+/* 	} */
+/* 	.text { */
+/* 		top: 25%; */
+/* 	} */
 }
