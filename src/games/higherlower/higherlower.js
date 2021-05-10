@@ -88,6 +88,14 @@ class HigherLower extends Game{
 			$("#hl-lower").css("--images","");
 			
 			for(var i = 0; i <= 1; i++){
+				
+				console.log("setPics: ");
+				console.log("	User"+i+": "+(i==0?getName1():getName2()));
+				console.log("	Index: "+(this.currentIndex/2));
+				console.log("	higher: "+this.higher_users[i][this.currentIndex/2]);
+				console.log("	set: "+(this.higher_users[i][this.currentIndex/2] ? "higher" : "lower"));
+				console.log("	done: "+this.done[i][this.currentIndex/2]);
+				
 				var element = $("#hl-" + (this.higher_users[i][this.currentIndex/2] ? "higher" : "lower"));
 				let _img = element.css("--images");
 				let uuid = i == 0 ? getUUID1() : getUUID2();
@@ -113,16 +121,19 @@ class HigherLower extends Game{
 		 if(this.active){
 			 switch(packetId){
 			 	case HIGHERLOWERANSWERED:
+					this.log("GOT HIGHERLOWERANSWERED");
 		 		 var packet = new HigherLowerAnsweredPacket();
 			 	 packet.parseFromInput(buffer);
 				 	 
 			 	 if(getUUID1() == packet.uuid){
 			 		this.done[0][packet.index/2] = true;
 			 		this.higher_users[0][packet.index/2] = packet.higher;
+			 		console.log("USER1 "+getName1()+" higher:"+packet.higher);
 			 		this.setspec(1, packet.index,packet.right);
 			 	 }else if(getUUID2() == packet.uuid){
 			 		this.done[1][packet.index/2] = true;
 			 		this.higher_users[1][packet.index/2] = packet.higher;
+			 		console.log("USER2 "+getName2()+" higher:"+packet.higher);
 			 		this.setspec(2, packet.index,packet.right);
 			 	 }
 			 		

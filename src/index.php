@@ -31,11 +31,11 @@
 		var uuid;
 		
 		if(window.location.hostname == "localhost"){
-			uuid = "138cbd2a-8db2-4a28-bdbd-03df5d64851a";
+			uuid = "25cb680c-d2b8-4d75-97ef-5b697f4741a7";
 		} else if(window.location.hostname == "127.0.0.1"){
-			uuid = "ffbef80f-ad3e-49f2-95cd-e8fbae633473";
+			uuid = "1a68a698-a643-4630-9137-3297306c19f2";
 		} else if(window.location.hostname.startsWith("192.168.178")){
-			uuid = "697615a1-f64c-4e97-beb0-c458ac531045";
+			uuid = "bc991525-e091-40d0-8fcc-966f0069c4d1";
 		}else{
 			console.log("HOST not found => "+window.location.hostname);
 		}
@@ -83,7 +83,7 @@
 			  }else{
 				  debug("Not Accepted...");
 				  setLoading(false);
-				  removeCookie();
+				  removeCookie("SID");
 			  }
 			  break;
 		  default:

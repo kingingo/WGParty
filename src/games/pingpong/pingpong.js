@@ -7,9 +7,12 @@ const wallHitSound = new Audio('games/pingpong/sounds/wallHitSound.wav');
 
 /* some extra variables */
 const netWidth = 4;
+const intervall_per_second = 30;
+const start_text = "Start in";
+const wait_text = "Warte auf alle Spieler";
 
 const paddleWidth = 10;
-const paddleHeight = 100;
+const paddleHeight = 70;
 /* some extra variables ends */
 
 const canvas_id = "pingpong_cs";
@@ -42,8 +45,11 @@ class PingPong extends Game{
 			/* get a "context". Without "context", we can't draw on canvas */
 			tthis.ctx = tthis.canvas.getContext('2d');
 			// calls gameLoop() function 60 times per second
-			tthis.interval = setInterval(tthis.gameLoop.bind(null,tthis), 1000 / 60);
+			console.log("SET START -1 !0");
+			tthis.start = -1;
+			tthis.interval = setInterval(tthis.gameLoop.bind(null,tthis), 1000 / intervall_per_second);
 			tthis.lastY = -1;
+			tthis.uuid = getUUID();
 			tthis.net = {
 			  x: tthis.canvas.width / 2 - netWidth / 2,
 			  y: 0,
@@ -98,7 +104,6 @@ class PingPong extends Game{
 				}else if(tthis.user2.uuid == getUUID()){
 					tthis.user = tthis.user2;
 				}
-				console.log("SET USER : "+tthis.user.uuid);
 			}
 
 			tthis.callbackStart();
@@ -107,24 +112,42 @@ class PingPong extends Game{
 	
 	onmessage(packetId, buffer){
 		 if(this.active){
+			 if(this.user2 == undefined){
+				  this.log("onmessage packetId="+packetId+" user2=undefined");
+				 return;
+			 }else if(this.user1 == undefined){
+				  this.log("onmessage packetId="+packetId+" user1=undefined");
+				 return;
+			 }
+			 
 			 switch(packetId){
+			  case PINGPONGRESET:
+				  var packet = new PingPongResetPacket();
+				  packet.parseFromInput(buffer);
+				  console.log("PINGPONGRESET PACKET "+((packet.start - getCurrentTime())/1000));
+				  this.start = packet.start;
+				  this.reset();
+				  
+				  break;
 			  case PINGPONGUSER:
 				  var packet = new PingPongUserPacket();
 				  packet.parseFromInput(buffer);
-				 	  
-				  if(this.spectate){
-					  if(packet.uuid == this.user2.uuid){
-						  this.user2.y = packet.y;
-					  }else if(packet.uuid == this.user1.uuid){
-						  this.user1.y = packet.y;
-					  }else this.log("PingPongUserPacket | uuid: "+packet.uuid+" != "+this.user2.uuid);
-				  }else{
-					  if(packet.uuid == this.user2.uuid){
-						  this.user2.y = packet.y;
-					  }else if(packet.uuid == this.user1.uuid){
-						  this.user1.y = packet.y;
-					  }else this.log("PingPongUserPacket | uuid: "+packet.uuid+" != "+this.user2.uuid);
+				  
+				  if(packet.uuid == undefined){
+					  this.log("PingPongUserPacket uuid="+packet.uuid);
+					  break;
 				  }
+				  
+				  if(packet.uuid == this.uuid){
+					  this.log("own PingPongUserPacket break!");
+					  break;
+				  }
+				 	  
+				  if(packet.uuid == this.user2.uuid){
+					  this.user2.y = packet.user_y;
+				  }else if(packet.uuid == this.user1.uuid){
+					  this.user1.y = packet.user_y;
+				  }else this.log("PingPongUserPacket | uuid: "+packet.uuid+" != "+this.user2.uuid);
 				  break;
 			  case PINGPONGGOAL:
 				  var packet = new PingPongGoalPacket();
@@ -202,16 +225,27 @@ class PingPong extends Game{
 		    y: ev.targetTouches[0].clientY - rect.top
 		  };
 	}
+	
+	get_start_in_secs(){
+		return (this.start - getCurrentTime()) / 1000;
+	}
+	
+	is_starting(){
+		return this.start == -1 || this.start > getCurrentTime();
+	}
 
 	/* moving paddles section end */
 
-	// reset the ball
-	reset() {
+	wait(){
 	  // reset ball's value to older values
 	  this.ball.x = this.canvas.width / 2;
 	  this.ball.y = this.canvas.height / 2;
 	  this.ball.speed = 7;
-
+	}
+	
+	// reset the ball
+	reset() {
+	  this.wait();
 	  // changes the direction of this.ball
 	  this.ball.velocityX = -this.ball.velocityX;
 	  this.ball.velocityY = -this.ball.velocityY;
@@ -242,6 +276,11 @@ class PingPong extends Game{
 				this.user.y += 8;
 			}
 	  }
+	  
+	  if(this.is_starting()){
+		  return;
+	  }
+	  
 	  // check if ball hits top or bottom wall
 	  if (this.ball.y + this.ball.radius >= this.canvas.height || this.ball.y - this.ball.radius <= 0) {
 	    // play wallHitSound
@@ -251,28 +290,28 @@ class PingPong extends Game{
 
 	   // if this.ball hit on right wall
 	   if (this.ball.x + this.ball.radius >= this.canvas.width) {
-	    // play scoreSound
-//	    scoreSound.play();
-	    // then user scored 1 point
-		this.user1.score += 1;
-		if(!this.spectate){
+		if(!this.spectate && this.uuid == this.user1.uuid){
+		    // then user scored 1 point
+			this.user1.score += 1;
+			console.log("GOAL USER1 "+getName1()+" SEND GOAL PACKET");
 			write(new PingPongGoalPacket(this.user1.uuid,this.user1.score));
 		}
-			
-		this.reset();
+		console.log("SET START -1  !1");
+		this.start=-1;
+	    this.wait();
 	  }
 
 	  // if this.ball hit on left wall
 	  if (this.ball.x - this.ball.radius <= 0) {
-	    // play scoreSound
-//	    scoreSound.play();
-	    // then ai scored 1 point
-		this.user2.score += 1;
-		if(!this.spectate){
+		if(!this.spectate && this.uuid == this.user2.uuid){
+		    // then ai scored 1 point
+			this.user2.score += 1;
+			console.log("GOAL USER2 "+getName2()+" SEND GOAL PACKET");
 			write(new PingPongGoalPacket(this.user2.uuid,this.user2.score));
 		}
-			
-	    this.reset();
+		console.log("SET START -1 !2");
+		this.start=-1;
+	    this.wait();
 	  }
 
 	  // move the this.ball
@@ -309,6 +348,23 @@ class PingPong extends Game{
 	    this.ball.speed += 0.2;
 	  }
 	}
+	
+	drawStart(){
+		this.ctx.fillStyle = '#521b29';
+		this.ctx.font = '35px sans-serif';
+		
+		if(this.start==-1){
+			let width = this.ctx.measureText(wait_text).width;
+			this.ctx.fillText(wait_text, (this.canvas.width-width)/2, this.canvas.height/5);
+		}else{
+			let width = this.ctx.measureText(start_text).width;
+			this.ctx.fillText(start_text, (this.canvas.width-width)/2, this.canvas.height/5);
+			
+			let countdown = Math.floor(this.get_start_in_secs()).toString();
+			width = this.ctx.measureText(countdown).width;
+			this.ctx.fillText(countdown, (this.canvas.width-width)/2, this.canvas.height/3);
+		}
+	}
 
 	// render draws everything on to canvas
 	render() {
@@ -319,6 +375,12 @@ class PingPong extends Game{
 
 	  // draw net
 	  this.drawNet();
+	  
+	  if(this.is_starting()){
+		  //draw Start Countdown
+		  this.drawStart();
+	  }
+	  
 	  // draw scores
 	  this.drawScores();
 	  // draw user1 name

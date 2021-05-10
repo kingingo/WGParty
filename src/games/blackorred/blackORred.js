@@ -4,6 +4,9 @@ const bor_canvas_id = "card_table";
 const bor_card_width = 138;
 const bor_card_height = 192;
 
+const profile_height = 50;
+const profile_width = 50;
+
 class BlackOrRed extends Game{
 	
 	constructor(spectate, callbackStart, callbackEnd){
@@ -41,6 +44,8 @@ class BlackOrRed extends Game{
 					 
 					 this.canvas.addEventListener('touchmove', ev => this.touchHandler(ev));
 					 this.canvas.addEventListener('click', ev => this.touchHandler(ev));
+				 }else{
+					 this.uid = 3;
 				 }
 		    	 this.interval = setInterval(() => this.update(), 1000 / 3 );
 		    	 console.log("START INTERVALL!!");
@@ -55,8 +60,10 @@ class BlackOrRed extends Game{
 					 console.log("UserChooseColorPacket "+user.name+" CHOOSE["+packet.deck_card+"]="+packet.color);
 					 user.choose[packet.deck_card] = packet.color;
 					 
-					 if(this.spectate && this.users[0].choose[packet.deck_card] > 0 && this.users[1].choose[packet.deck_card] > 0)
-						 this.deck_card = packet.deck_card+1;
+					 if(this.spectate && this.users[0].choose[packet.deck_card] > 0 && this.users[1].choose[packet.deck_card] > 0){
+						 this.canvas.addEventListener('touchmove', ev => this.touchHandler(ev));
+						 this.canvas.addEventListener('click', ev => this.touchHandler(ev));
+					 }
 				 }else{
 					 console.log("UserChooseColorPacket User null!? "+packet);
 				 }
@@ -86,16 +93,23 @@ class BlackOrRed extends Game{
 		this.canvas = document.getElementById(bor_canvas_id);
 		// width="900" height="600"
 		
-		this.canvas.width = 900;
-		this.canvas.height = 600;
+		this.canvas.width = window.mobile ? window.innerWidth : 900;
+		this.canvas.height = window.mobile ? 700 : 600;
 		
 		this.ctx = this.canvas.getContext("2d");
-		this.background = document.getElementById("background");
+		this.background = document.createElement("img");
+		this.background.hidden = true;
+		this.background.id = "background";
+		this.background.width = this.canvas.width;
+		this.background.height = this.canvas.height;
+		this.background.src = "games/blackorred/img/"+(window.mobile ? "mobile_" : "")+"background0"+(window.mobile ? "1" : "2")+".jpg";
+		document.getElementById(this.containerId).appendChild(this.background);
+		
 		this.cover = document.getElementById("card_cover");
 		this.buttons = {
 				red: {
 					x:this.canvas.width/3, 
-					y:this.canvas.height - (this.canvas.height/5), 
+					y:this.canvas.height - (this.canvas.height/(window.mobile ? 9 : 5)), 
 					color:"red", 
 					pressed:false, 
 					pressed_color:"#f37979",
@@ -103,7 +117,7 @@ class BlackOrRed extends Game{
 				},
 				black: {
 					x:this.canvas.width - this.canvas.width/3, 
-					y:this.canvas.height - (this.canvas.height/5), 
+					y:this.canvas.height - (this.canvas.height/(window.mobile ? 9 : 5)), 
 					color:"black", 
 					pressed:false, 
 					pressed_color:"#3a3838",
@@ -118,21 +132,38 @@ class BlackOrRed extends Game{
 				name:localStorage.getItem('p1_name'),
 				uuid:getUUID1(),
 				path:getProfile(getUUID1()),
-				x:this.canvas.width - this.canvas.width/10,
+				x: (window.mobile ? this.canvas.width / 10 : (this.canvas.width - this.canvas.width/10)),
+				y: (window.mobile ? 60 : 100),
 				choose:[0,0,0],
 			},
 			{
 				name:localStorage.getItem('p2_name'),
 				uuid:getUUID2(),
 				path:getProfile(getUUID2()),
-				x:this.canvas.width - this.canvas.width/5 + 25,
+				x: (window.mobile ? this.canvas.width / 10 : (this.canvas.width - this.canvas.width/5 + 25)),
+				y: (window.mobile ? 110 : 100),
 				choose:[0,0,0],
 			},
 			{
 				choose:[0,0,0],
-				x:this.canvas.width - this.canvas.width/4,
-			}
+				x: (window.mobile ? this.canvas.width/10 : this.canvas.width - this.canvas.width/4),
+				y: (window.mobile ? 30 : 100),
+			},
+			{
+				choose:[0,0,0],
+				x: 0,
+				y: 0,
+			},
 		];
+		
+		if(this.spectate){
+			this.users[3].name = getName();
+			this.users[3].uuid = getUUID();
+			this.users[3].path = getProfile(getUUID());
+			this.users[3].x = (window.mobile ? this.canvas.width/10 : this.canvas.width - this.canvas.width/4);
+			this.users[3].y = (window.mobile ? 160 : 100);
+		}
+		
 		console.log("CREATE USERS!!");
 		this.createProfileImg();
 		this.canvas.scrollIntoView();
@@ -147,8 +178,8 @@ class BlackOrRed extends Game{
 			if(typeof user.path == 'undefined')return;
 			
 			user.img = document.createElement("img");
-			user.img.width = 50;
-			user.img.height = 50;
+			user.img.width = profile_width;
+			user.img.height = profile_height;
 			user.img.src=user.path;
 			user.img.id="profile_"+user.name;
 			user.img.hidden=true;
@@ -183,10 +214,8 @@ class BlackOrRed extends Game{
 	}
 	
 	reset(){
-		if(!this.spectate){
-			this.canvas.removeEventListener('click', this.touchHandler);
-			this.canvas.removeEventListener('touchmove', this.touchHandler);
-		}
+		this.canvas.removeEventListener('click', this.touchHandler);
+		this.canvas.removeEventListener('touchmove', this.touchHandler);
 	}
 	
 	touchHandler(ev){
@@ -211,7 +240,8 @@ class BlackOrRed extends Game{
 		
 		if(button!=null){
 			this.users[this.uid].choose[this.deck_card] = button.choose_id;
-			write(new UserChooseColorPacket(getUUID(),this.deck_card,button.choose_id));
+			if(!this.spectate)
+				write(new UserChooseColorPacket(getUUID(),this.deck_card,button.choose_id));
 			
 			this.drawButton(button, true);
 			setTimeout(() => this.drawButton(button, false), 400);
@@ -220,6 +250,12 @@ class BlackOrRed extends Game{
 			console.log(this.deck_card+" >= "+this.users[2].choose.length);
 			if(this.deck_card >= this.users[2].choose.length){
 				this.reset();
+			}else{
+				if(this.spectate){
+					if(this.users[0].choose[this.deck_card] == 0 || this.users[1].choose[this.deck_card] == 0){
+						reset();
+					}
+				}
 			}
 		}
 	}
@@ -238,13 +274,16 @@ class BlackOrRed extends Game{
 	render(){
 		this.drawBackground();
 		
-		this.drawProfile(this.users[0]);
-		this.drawProfile(this.users[1]);
-		this.drawPoints(this.users[2]);
-		
 		this.drawCards(this.cards.length);
 		this.drawButton(this.buttons.red);
 		this.drawButton(this.buttons.black);
+		
+		this.drawProfile(this.users[0]);
+		this.drawProfile(this.users[1]);
+		if(this.spectate)
+			this.drawProfile(this.users[3]);
+		
+		this.drawPoints(this.users[2]);
 	}
 	
 	resetCanvas(){
@@ -252,12 +291,16 @@ class BlackOrRed extends Game{
 		this.ctx.lineWidth = 1;
 	}
 	
+	show_color(i){
+		return this.users[0].choose[i] > 0 && this.users[1].choose[i] > 0 && (!this.spectate || this.users[3].choose[i] > 0);
+	}
+	
 	drawPoints(user){
 		this.resetCanvas();
-		for(var i = 0; i < this.deck_card; i++){
+		for(var i = 0; i < 3; i++){
 			this.ctx.beginPath();
-			this.ctx.arc(user.x + 50/2, 50*2 + 30 * (i+1), 10, 0, 2 * Math.PI);
-			this.ctx.fillStyle = user.choose[i] == 0 ? "white" : (user.choose[i] == this.buttons.red.choose_id ? "red" : "black");
+			this.ctx.arc(user.x + (window.mobile ? profile_width + 30 * (i+1) : 50/2), user.y + (window.mobile ? this.buttons.radius/2 : 30 * (i+1)), 10, 0, 2 * Math.PI);
+			this.ctx.fillStyle = user.choose[i] == 0 || (!this.show_color(i) && user.name == undefined) ? "white" : (user.choose[i] == this.buttons.red.choose_id ? "red" : "black");
 			this.ctx.fill();
 			this.ctx.stroke();
 		}
@@ -271,14 +314,15 @@ class BlackOrRed extends Game{
 			this.resetCanvas();
 		}
 		
-		this.ctx.drawImage(user.img, user.x, user.img.height, user.img.width, user.img.height);
-		this.ctx.strokeRect(user.x, user.img.height, user.img.width, user.img.height);
+		let y = (window.mobile ? user.y : user.img.height);
+		this.ctx.drawImage(user.img, user.x, y, user.img.width, user.img.height);
+		this.ctx.strokeRect(user.x, y, user.img.width, user.img.height);
 		this.drawPoints(user);
 	}
 	
 	drawCards(amount){
 		var x = this.canvas.width/2 - this.cover.width;
-		var y = this.canvas.height/3;
+		var y = window.mobile ? this.canvas.height/2 : this.canvas.height/3;
 
 		for(var i = amount-1; i >= 0; i--){
 			if(i < this.deck_card){
