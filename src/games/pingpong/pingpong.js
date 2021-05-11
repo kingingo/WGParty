@@ -29,11 +29,9 @@ class PingPong extends Game{
 		super.end();
 		clearInterval(this.interval);
 		
-		if(!this.spectate){
-			this.canvas.removeEventListener('touchmove', this.touchMoveHandler);
-			this.canvas.removeEventListener('touchend', this.touchHandler);
-			this.canvas.removeEventListener('touchstart', this.touchHandler);
-		}
+		this.canvas.removeEventListener('touchmove', this.touchMoveHandler);
+		this.canvas.removeEventListener('touchend', this.touchHandler);
+		this.canvas.removeEventListener('touchstart', this.touchHandler);
 	}
 	
 	start(containerId){
