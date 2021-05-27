@@ -20,6 +20,7 @@ includeProfile();
 <script src="games/pingpong/pingpong.js" type="text/javascript"></script>
 <script src="games/ladder/ladder.js" type="text/javascript"></script>
 <script src="games/blackorred/blackORred.js" type="text/javascript"></script>
+<script src="games/scissors_stone_paper/scissorsstonepaper.js" type="text/javascript"></script>
 </head>
 
 <body class="text-center">
@@ -415,8 +416,10 @@ includeProfile();
 						var packet = new GameStartPacket();
 						packet.parseFromInput(buffer);
 
-						if(this.game!=null)
+						if(this.game!=null){
+							this.game.end()
 							this.game.clear();
+						}
 						
 						var spectate = true;
 						if(getUUID() == getUUID1() || getUUID() == getUUID2()){
@@ -425,12 +428,28 @@ includeProfile();
 						console.log("SPECTATE: "+spectate);
 
 						switch(packet.game){
+						case "scissorsstonepaper":
+							this.game=new ScissorsStonePaper(spectate,
+									function(){
+					    		var packet = new GameStartAckPacket();
+					    		write(packet);
+					    		console.log("scissorsstonepaper write GameStartAckPacket to Server");
+							},
+							function(){
+								console.log('stop ScissorsStonePaper');
+								var packet = new GameEndPacket();
+								write(packet);
+								
+								toggle("stage1");
+							}
+						);
+						break;
 						case "blackorred":
 							this.game = new BlackOrRed(spectate,
 								function(){
     					    		var packet = new GameStartAckPacket();
     					    		write(packet);
-    					    		console.log("write GameStartAckPacket to Server");
+    					    		console.log("blackorred write GameStartAckPacket to Server");
 								},
 								function(){
 									console.log('stop BlackOrRed');
@@ -446,7 +465,7 @@ includeProfile();
 								function(){
     					    		var packet = new GameStartAckPacket();
     					    		write(packet);
-    					    		console.log("write GameStartAckPacket to Server");
+    					    		console.log("ladder write GameStartAckPacket to Server");
 								},
 								function(){
 									console.log('stop ladder');
@@ -462,7 +481,7 @@ includeProfile();
 								function(){
     					    		var packet = new GameStartAckPacket();
     					    		write(packet);
-    					    		console.log("write GameStartAckPacket to Server");
+    					    		console.log("higherlower write GameStartAckPacket to Server");
 								},
 								function(){
 									console.log('stop higherlower');
@@ -478,7 +497,7 @@ includeProfile();
 								function(){
     					    		var packet = new GameStartAckPacket();
     					    		write(packet);
-    					    		console.log("write GameStartAckPacket to Server");
+    					    		console.log("pingpong write GameStartAckPacket to Server");
 								},
 								function(){
 									console.log('stop PingPong');

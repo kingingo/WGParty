@@ -54,7 +54,7 @@ class ScissorsStonePaper extends Game{
 		this.canvas.width = 400;
 		this.canvas.height = 700;
 		this.ctx = this.canvas.getContext("2d");
-
+		
 		let paper = document.getElementById("paper");
 		let scissors = document.getElementById("scissors");
 		let stone = document.getElementById("stone");
@@ -99,14 +99,15 @@ class ScissorsStonePaper extends Game{
 		this.e_angle = 270;
 		this.e_angle_bounce = true;
 		this.e_last_switch = getCurrentTime();
-		
+
+		this.profile = document.getElementById("p1");
 		this.index = -1;
 		this.last = 0;
 		this.angle = 360;
 		this.angle_bounce = true;
 		this.last_switch = getCurrentTime();
 		
-		this.start = getCurrentTime() + 1000 * 60;
+		this.start = getCurrentTime() + 1000 * 10;
 //		this.interval = setInterval(this.loop.bind(null,this), 1000 / 1)
 		this.loop(this);
 	}
@@ -125,7 +126,11 @@ class ScissorsStonePaper extends Game{
 
 	touchHandler(tthis, ev){
 		ev.preventDefault();
-		if(tthis.index != -1)return;
+		//Auswählen bis Zeit um ist.
+		if(tthis.start <= getCurrentTime())return;
+		
+		//Nur einmal auswählen
+//		if(tthis.index != -1)return;
 		let pos = tthis.getTouchPos(ev);
 		let x = pos.x;
 		let y = pos.y;
@@ -191,23 +196,29 @@ class ScissorsStonePaper extends Game{
 	}
 	
 	loop(tthis){
-		if(tthis.start > getCurrentTime()){
-//			clearInterval(tthis.interval);
-			requestAnimationFrame(tthis.loop.bind(null,tthis)); 
-		}
-		
-		tthis.update();
+//		tthis.update();
 		
 		tthis.drawBackground();
-		tthis.drawProfileEnemy();
+		tthis.drawProfiles();
 		tthis.drawChoose();
 		tthis.drawCountdown();
 		tthis.draw();
 		tthis.drawEnemy();
+		
+		if(tthis.start > getCurrentTime()){
+//			clearInterval(tthis.interval);
+			requestAnimationFrame(tthis.loop.bind(null,tthis)); 
+		}else{
+			tthis.wtf = document.getElementById("wtf");
+			tthis.bang = document.getElementById("bang");
+			tthis.drawImg(tthis.canvas.width/2 - tthis.profile.width/2, tthis.canvas.height/2 + tthis.profile.height/2, wtf);
+			tthis.drawImg(tthis.canvas.width/2 - tthis.e_profile.width/2, tthis.e_profile.height/2, bang);
+		}
 	}
 	
-	drawProfileEnemy(){
+	drawProfiles(){
 		this.drawImg(this.canvas.width/2 - this.e_profile.width/2, this.e_profile.height/2 ,this.e_profile);
+		this.drawImg(this.canvas.width/2 - this.profile.width/2, this.canvas.height/2 + this.profile.height/2,this.profile);
 	}
 	
 	drawEnemy(){
@@ -257,11 +268,10 @@ class ScissorsStonePaper extends Game{
 			this.drawImg(cx+ax,cy+ay,this.choose[this.last].el);
 			
 			if((getCurrentTime() - this.last_switch) > 250){
-				this.last = this.getRandomInt(this.choose.length);
+				this.last = this.index >= 0 ? this.index : this.getRandomInt(this.choose.length);
 				this.last_switch = getCurrentTime();
 			}
 
-			
 			this.angle = (this.angle_bounce ? this.angle+5 : this.angle-5);
 			
 			if(this.angle_bounce && this.angle > 450){
