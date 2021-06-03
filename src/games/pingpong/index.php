@@ -1,1 +1,1 @@
-<canvas id="pingpong_cs" width="500" height="300"></canvas>
+<canvas id="pingpong_cs"></canvas>

@@ -1,6 +1,94 @@
-class PingPongResetPacket{
+class PingPongSettingsPacket{
 	constructor(){
-		this.id=PINGPONGRESET;
+		this.id=PINGPONGSETTINGS;
+	}
+	
+	parseToOutput(){}
+	
+	parseFromInput(buffer){
+		this.player1 = new PingPongPlayerPacket();
+		this.player1.parseFromInput(buffer,false);
+		
+		this.player2 = new PingPongPlayerPacket();
+		this.player2.parseFromInput(buffer,false);
+		
+		this.ball = new PingPongBallPacket();
+		this.ball.parseFromInput(buffer,false);
+		
+		this.start = buffer.readDouble();
+		this.canvas_width = buffer.readInt();
+		this.canvas_height = buffer.readInt();
+		this.paddle_width = buffer.readInt();
+		this.paddle_height = buffer.readInt();
+	}
+	
+	toString(){
+		return "start:"+this.start
+		+" CANVAS_WIDTH:"+this.canvas_width+" CANVAS_HEIGHT:"+this.canvas_height
+		+" PADDLE_WIDTH:"+this.paddle_width+" PADDLE_HEIGHT:"+this.paddle_height;
+	}
+}
+
+class PingPongGoalPacket{
+	
+	constructor(){
+		this.id=PINGPONGGOAL;
+	}
+	
+	parseToOutput(){}
+	
+	parseFromInput(buffer){
+		this.uid = buffer.readInt();
+		this.score = buffer.readInt();
+	}
+	
+	toString(){
+		return "uid:"+this.uid+" score:"+this.score;
+	}
+}
+
+class PingPongPlayerPacket{
+	
+	constructor(downPressed, upPressed, x , y , uid, uuid){
+		this.downPressed = downPressed;
+		this.upPressed = upPressed;
+		
+		this.x = x;
+		this.y = y;
+		this.uid = uid;
+		this.uuid = uuid;
+		this.id=PINGPONGPLAYER;
+	}
+	
+	parseToOutput(){
+		this.buffer = new dcodeIO.ByteBuffer(8,false,false);
+		this.buffer.writeBoolean(this.downPressed);
+		this.buffer.writeBoolean(this.upPressed);
+		this.buffer.writeInt(this.y);
+		this.buffer.writeInt(this.uid);
+		return this.buffer;
+	}
+	
+	parseFromInput(buffer, onlyPosition){
+		if(!onlyPosition){
+			this.downPressed = buffer.readBoolean();
+			this.upPressed = buffer.readBoolean();
+		}
+		
+		this.x = buffer.readInt();
+		this.y = buffer.readInt();
+		this.uid = buffer.readInt();
+	}
+	
+	toString(){
+		return "uuid:"+this.uuid;
+	}
+}
+
+class PingPongStartPacket{
+	
+	constructor(){
+		this.id=PINGPONGSTART;
 	}
 	
 	parseToOutput(){}
@@ -10,55 +98,27 @@ class PingPongResetPacket{
 	}
 	
 	toString(){
-		return "start:"+this.start;
+		return "start:"+this.uuid;
 	}
 }
 
-class PingPongUserPacket{
-	constructor(uuid, user_y){
-		this.uuid = uuid;
-		this.user_y=parseFloat(user_y);
-		this.id=PINGPONGUSER;
+class PingPongBallPacket{
+	
+	constructor(){
+		this.id=PINGPONGBALL;
 	}
 	
-	parseToOutput(){
-		this.buffer = new dcodeIO.ByteBuffer(8,false,false);
-		this.buffer.writeString(this.uuid);
-		this.buffer.writeDouble(this.user_y);
-		return this.buffer;
-	}
+	parseToOutput(){}
 	
-	parseFromInput(buffer){
-		this.uuid = buffer.readString();
-		this.user_y = buffer.readDouble();
+	parseFromInput(buffer, onlyPosition){
+		this.x = buffer.readInt();
+		this.y = buffer.readInt();
+		if(!onlyPosition){
+			this.radius = buffer.readInt();
+		}
 	}
 	
 	toString(){
-		return "uuid:"+this.uuid+" user_y:"+this.user_y;
-	}
-}
-
-class PingPongGoalPacket{
-	
-	constructor(uuid, score){
-		this.uuid = uuid;
-		this.score = score;
-		this.id=PINGPONGGOAL;
-	}
-	
-	parseToOutput(){
-		this.buffer = new dcodeIO.ByteBuffer(8,false,false);
-		this.buffer.writeString(this.uuid);
-		this.buffer.writeInt(this.score);
-		return this.buffer;
-	}
-	
-	parseFromInput(buffer){
-		this.uuid = buffer.readString();
-		this.score = buffer.readInt();
-	}
-	
-	toString(){
-		return "uuid:"+this.uuid+" score:"+score;
+		return "x/y:"+this.x+"/"+this.y+" r:"+this.radius;
 	}
 }

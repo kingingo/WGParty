@@ -1,6 +1,7 @@
 var websocket;
 var url = "192.168.178.110";
 var server_ip = "192.168.178.110:8887";
+window.DEBUG=true;
 
 function write(packet){
 	var b = packet.parseToOutput();
@@ -77,12 +78,12 @@ function connect(timeout = 2000,onopen, onmessage){
   	    	  write(new PongPacket());
   	      }else{
   	    	  
-  	    	  for(var i = 0; i < window.LIST_IDS.length; i++){
-  	    		  if(window.LIST_IDS[i].id == packetId){
-  	    			  debug("REC PACKET:"+window.LIST_IDS[i].packet+" packetId:"+packetId);
-  	    			  break;
-  	    		  }
-  	    	  }
+//  	    	  for(var i = 0; i < window.LIST_IDS.length; i++){
+//  	    		  if(window.LIST_IDS[i].id == packetId){
+//  	    			  debug("REC PACKET:"+window.LIST_IDS[i].packet+" packetId:"+packetId);
+//  	    			  break;
+//  	    		  }
+//  	    	  }
   	    	  
   	    	  
   		      onmessage(packetId, buffer);  
@@ -115,7 +116,8 @@ function loadScript(url) {
 }
 
 function debug(msg){
-	console.log("DEBUG: "+msg);
+	if(window.DEBUG)
+		console.log("DEBUG: "+msg);
 }
 
 class Game{
