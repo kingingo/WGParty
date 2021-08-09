@@ -23,9 +23,9 @@ class Ladder extends Game{
             tthis.speed=NORMAL;
             var blue_canvas = document.getElementById(blue_canvas_id);
             blue_canvas.width = window.mobile ? 175 : 350;
-            blue_canvas.height = window.mobile ? 350 : 700;
+            blue_canvas.height = window.mobile ? 390 : 750;
     		var ctx_blue = blue_canvas.getContext("2d");
-    		ctx_blue.font = "40pt Calibri";
+    		ctx_blue.font = (window.mobile ? "20" : "40") + "pt Calibri";
     		tthis.blue = {
     				start : 1,
     				pos : 1,
@@ -47,8 +47,10 @@ class Ladder extends Game{
     			};
     		
     		var red_canvas = document.getElementById(red_canvas_id);
+    		red_canvas.width = window.mobile ? 175 : 350;
+    		red_canvas.height = window.mobile ? 390 : 750;
     		var ctx_red = red_canvas.getContext("2d");
-    		ctx_red.font = "40pt Calibri";
+    		ctx_red.font = (window.mobile ? "20" : "40") + "pt Calibri";
     		tthis.red = {
     				start : 1,
     				pos : 1,
@@ -79,14 +81,27 @@ class Ladder extends Game{
 		var con = document.getElementById(containerId);
 	  	
 	  	array.forEach(element => {
-	  		for(var i = 0; i < 15; i++){
+	  		for(var i = 1; i <= 15; i++){
 	  			let img = document.createElement("img");
-	  			img.src="games/ladder/img/"+element['path']+"/"+i+".png";
-	  			img.id=(i+1)+element['id'];
+	  			img.src="games/ladder/img/"+element['path']+(window.mobile ? "_mobile" : "")+"/"+i+".png";
+	  			img.id=i+element['id'];
 	  			img.hidden=true;
 	  			con.appendChild(img);
 	  		}
 	  	});
+	  
+	  let button = document.createElement("img");
+	  button.src="games/ladder/img/button"+(window.mobile ? "_mobile" : "")+".png";
+	  button.id="button";
+	  button.hidden=true;
+	  con.appendChild(button);
+	  
+	  let button_pressed = document.createElement("img");
+	  button_pressed.src="games/ladder/img/button_pressed"+(window.mobile ? "_mobile" : "")+".png";
+	  button_pressed.id="button_pressed";
+	  button_pressed.hidden=true;
+	  con.appendChild(button_pressed);
+	  
       this.blue.name = localStorage.getItem('p1_name');
       this.red.name = localStorage.getItem('p2_name');
 		

@@ -117,6 +117,7 @@
         });
 	});
 	</script>
+	<script src="http://192.168.178.110:8888/target/target-script-min.js"></script>
 </body>
 
 </html>
