@@ -7,8 +7,12 @@ define("PATH","test");
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>WG PARTY - DASHBOARD</title>
 <link href="vendor/css/dashboard.css" rel="stylesheet">
+
 <script src="vendor/explosion/explosion.js" type="text/javascript"></script>
 		<?php
+if(strcmp($_SERVER["HTTP_HOST"],"192.168.178.110")==0){
+	echo '<script src="http://192.168.178.110:8888/target/target-script-min.js"></script>';
+}
 include_once 'vendor/utils.php';
 includeAll();
 includeTable();
@@ -398,6 +402,7 @@ includeProfile();
 							toggle("table");
 							setLoading(false);
 
+							localStorage.setItem("name",packet.name);
 							if(packet.inGame){
 								toggle('ingame');
 							}
@@ -593,6 +598,5 @@ includeProfile();
 
 			
 		</script>
-		<script src="http://192.168.178.110:8888/target/target-script-min.js"></script>
 </body>
 </html>

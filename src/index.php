@@ -3,7 +3,11 @@
 <title>WG PARTY - ANMELDUNG</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="vendor/css/signin.css" rel="stylesheet">
+
 <?php 
+	if(strcmp($_SERVER["HTTP_HOST"],"192.168.178.110")==0){
+		echo '<script src="http://192.168.178.110:8888/target/target-script-min.js"></script>';
+	}
     include_once 'vendor/utils.php';
     includeAll(); 
 ?>
@@ -117,7 +121,6 @@
         });
 	});
 	</script>
-	<script src="http://192.168.178.110:8888/target/target-script-min.js"></script>
 </body>
 
 </html>
